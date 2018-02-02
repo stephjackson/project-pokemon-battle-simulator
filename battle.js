@@ -19,17 +19,20 @@ var typeChart = {
   normal: {
     normal: 1,
     ground: 1,
-    rock:   .5
+    rock:   .5,
+    none:   1
   },
   ground: {
     normal: 1,
     ground: 1,
-    rock:   2
+    rock:   2,
+    none:   1
   },
   rock: {
     normal: 1,
     ground: .5,
-    rock:   1   
+    rock:   1,
+    none:   1 
   },
 }
 
@@ -43,7 +46,7 @@ function Tauros() {
   this.defense    = 288, 
   this.special    = 238, 
   this.speed      = 318,
-  this.moves     = [attack.bodySlam, attack.earthquake]
+  this.moves      = [attack.bodySlam, attack.earthquake]
 };
 
 function Rhydon() {
@@ -66,8 +69,8 @@ function Battle() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
-  playerTeam.push(tauros);
-  opponentTeam.push(rhydon);
+  playerTeam.push(rhydon);
+  opponentTeam.push(tauros);
 };
 
 //Calculates the damage of a Pokemon using a move on an opponent.
@@ -107,25 +110,81 @@ Battle.prototype.effectiveness = function(move, opponent) {
   return effectiveness;
 }
 
+//Prompt to pick a move.
+Battle.prototype.pickMove = function(currentPokemon) {
+  return currentPokemon.moves[prompt("Pick a move (Keys: 1, 2)") - 1]
+}
+
+//Randomly picks opponent's move.
+Battle.prototype.opponentMove = function(opponent) {
+  var random = Math.floor(Math.random() * opponent.moves.length);
+  return opponent.moves[random];
+}
+
+//Returns the faster of two Pokemon.
+Battle.prototype.checkSpeed = function(player, opponent) {
+  var faster = true;
+  if (player.speed === opponent.speed) {
+    var coinFlip = Math.floor(Math.random() * 2);
+    if (coinFlip === 0) {
+      faster = false;
+    }
+  }
+  faster = (player.speed > opponent.speed);
+  return faster;
+}
+
+Battle.prototype.checkFaint = function(player) {
+  return (player.health < 0);
+}
+
+//Object declarations to create objects to fill out teams.
 var battle = new Battle();
 var tauros = new Tauros();
 var rhydon = new Rhydon();
 battle.createTeams(battle.playerTeam, battle.opponentTeam);
 
 //Status update
-console.log("Current Pokemon: " + battle.playerTeam[0].name + " Health: " + battle.playerTeam[0].health);
-console.log("Opponent Pokemon: " + battle.opponentTeam[0].name + " Health: " + battle.opponentTeam[0].health);
-//Pick move
-console.log("Pick a move: ")
-console.log("1. " + battle.playerTeam[0].moves[0].name);
-console.log("2. " + battle.playerTeam[0].moves[1].name);
-//Opponent picks move
-//Check speed
-//Faster goes first
-//If someone dies, remove from team array
-//If team array length is zero, declare winner
-//Slower goes second
-//(again)
-//If someone dies, remove from team array
-//If team array length is zero, declare winner
-//Loop until someone dies
+while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
+{
+  console.log("Current Pokemon: " + battle.playerTeam[0].name + " Health: " + battle.playerTeam[0].health);
+  console.log("Opponent Pokemon: " + battle.opponentTeam[0].name + " Health: " + battle.opponentTeam[0].health);
+  //Pick move
+  console.log("Pick a move: ")
+  console.log("1. " + battle.playerTeam[0].moves[0].name);
+  console.log("2. " + battle.playerTeam[0].moves[1].name);
+  var pickedMove = battle.pickMove(battle.playerTeam[0]);
+  //Opponent picks move
+  var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
+  //Check speed
+  var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
+  var playerDamage = battle.calculateDamage(battle.playerTeam[0], pickedMove, battle.opponentTeam[0]);
+  var opponentDamage = battle.calculateDamage(battle.opponentTeam[0], opponentsMove, battle.playerTeam[0])
+  //Faster goes first
+  if (playerGoesFirst === true) {
+    console.log(battle.playerTeam[0].name + " used " + pickedMove.name + "!");
+    console.log(battle.playerTeam[0].name + " dealt " + playerDamage + " damage to " + battle.opponentTeam[0].name);
+    battle.opponentTeam[0].health -= playerDamage;
+    console.log("Enemy " + battle.opponentTeam[0].name + " has " + battle.opponentTeam[0].health + " health remaining.")
+    console.log("Enemy " + battle.opponentTeam[0].name + " used " + opponentsMove.name + "!");
+    console.log("Enemy " + battle.opponentTeam[0].name + " dealt " + opponentDamage + " damage to " + battle.playerTeam[0].name);
+    battle.playerTeam[0].health -= opponentDamage;
+    console.log(battle.playerTeam[0].name + " has " + battle.playerTeam[0].health + " health remaining.")
+  } else {
+    console.log("Enemy " + battle.opponentTeam[0].name + " used " + opponentsMove.name + "!");
+    console.log("Enemy " + battle.opponentTeam[0].name + " dealt " + opponentDamage + " damage to " + battle.playerTeam[0].name);
+    battle.playerTeam[0].health -= opponentDamage;
+    console.log(battle.playerTeam[0].name + " has " + battle.playerTeam[0].health + " health remaining.")
+    console.log(battle.playerTeam[0].name + " used " + pickedMove.name + "!");
+    console.log(battle.playerTeam[0].name + " dealt " + playerDamage + " damage to " + battle.opponentTeam[0].name);
+    battle.opponentTeam[0].health -= playerDamage;
+    console.log("Enemy " + battle.opponentTeam[0].name + " has " + battle.opponentTeam[0].health + " health remaining.")
+  }
+  //If someone dies, remove from team array
+  //If team array length is zero, declare winner
+  //Slower goes second
+  //(again)
+  //If someone dies, remove from team array
+  //If team array length is zero, declare winner
+  //Loop until someone dies
+}
