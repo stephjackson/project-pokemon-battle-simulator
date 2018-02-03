@@ -76,10 +76,11 @@ Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
 //Calculates the damage of a Pokemon using a move on an opponent.
 Battle.prototype.calculateDamage = function(attacker, move, opponent) {
   var damage = (42 * move.power * attacker.attack / opponent.defense / 50 + 2);
-  var STAB = battle.findSTAB(attacker, move);
-  var random = battle.damageRNG();
-  var effectiveness = battle.effectiveness(move, opponent);
-  damage = damage * STAB * effectiveness * random;
+  var STAB = this.findSTAB(attacker, move);
+  var random = this.damageRNG();
+  var effectiveness = this.effectiveness(move, opponent);
+  var crit = this.critCheck()
+  damage = damage * STAB * effectiveness * random * crit;
   return Math.round(damage);
 }
 
@@ -134,8 +135,38 @@ Battle.prototype.checkSpeed = function(player, opponent) {
   return faster;
 }
 
+//Checks if a defending Pokemon has fainted.
 Battle.prototype.checkFaint = function(player) {
   return (player.health < 0);
+}
+
+//Checks if an attack has critted (random chance for double damage).
+Battle.prototype.critCheck = function() {
+  var damage = 1;
+  if ((Math.floor(Math.random() * 16 + 1) === 16)){
+    damage = 2;
+  }
+  return damage;
+}
+
+//Attack logic - calculates damage, outputs strings based on results, checks for fainting.
+Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam) {
+  var attackDamage = battle.calculateDamage(attacker, pickedMove, defender);
+  console.log(attacker.name + " used " + pickedMove.name + "!");
+  defender.health -= attackDamage;
+  console.log(attacker.name + " dealt " + attackDamage + " damage to " + defender.name);
+  console.log(defender.name + " has " + defender.health + " health remaining.")
+  var defenderFaint = this.checkFaint(defender);
+  if (defenderFaint === true) {
+    defenderTeam.shift();
+    this.winnerCheck(defenderTeam);
+  }
+}
+
+Battle.prototype.winnerCheck = function(defenderTeam) {
+  if (defenderTeam.length === 0) {
+    console.log("Player has lost the game!");
+  }
 }
 
 //Object declarations to create objects to fill out teams.
@@ -158,33 +189,16 @@ while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
   var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
   //Check speed
   var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
-  var playerDamage = battle.calculateDamage(battle.playerTeam[0], pickedMove, battle.opponentTeam[0]);
-  var opponentDamage = battle.calculateDamage(battle.opponentTeam[0], opponentsMove, battle.playerTeam[0])
   //Faster goes first
   if (playerGoesFirst === true) {
-    console.log(battle.playerTeam[0].name + " used " + pickedMove.name + "!");
-    console.log(battle.playerTeam[0].name + " dealt " + playerDamage + " damage to " + battle.opponentTeam[0].name);
-    battle.opponentTeam[0].health -= playerDamage;
-    console.log("Enemy " + battle.opponentTeam[0].name + " has " + battle.opponentTeam[0].health + " health remaining.")
-    console.log("Enemy " + battle.opponentTeam[0].name + " used " + opponentsMove.name + "!");
-    console.log("Enemy " + battle.opponentTeam[0].name + " dealt " + opponentDamage + " damage to " + battle.playerTeam[0].name);
-    battle.playerTeam[0].health -= opponentDamage;
-    console.log(battle.playerTeam[0].name + " has " + battle.playerTeam[0].health + " health remaining.")
+    battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam);
+    if (battle.opponentTeam.length > 0) {
+      battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam);
+    }
   } else {
-    console.log("Enemy " + battle.opponentTeam[0].name + " used " + opponentsMove.name + "!");
-    console.log("Enemy " + battle.opponentTeam[0].name + " dealt " + opponentDamage + " damage to " + battle.playerTeam[0].name);
-    battle.playerTeam[0].health -= opponentDamage;
-    console.log(battle.playerTeam[0].name + " has " + battle.playerTeam[0].health + " health remaining.")
-    console.log(battle.playerTeam[0].name + " used " + pickedMove.name + "!");
-    console.log(battle.playerTeam[0].name + " dealt " + playerDamage + " damage to " + battle.opponentTeam[0].name);
-    battle.opponentTeam[0].health -= playerDamage;
-    console.log("Enemy " + battle.opponentTeam[0].name + " has " + battle.opponentTeam[0].health + " health remaining.")
+    battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam);
+    if (battle.playerTeam.length > 0) {
+      battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam);
+    }
   }
-  //If someone dies, remove from team array
-  //If team array length is zero, declare winner
-  //Slower goes second
-  //(again)
-  //If someone dies, remove from team array
-  //If team array length is zero, declare winner
-  //Loop until someone dies
 }
