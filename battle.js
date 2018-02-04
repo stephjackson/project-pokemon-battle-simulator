@@ -69,8 +69,10 @@ function Battle() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
-  playerTeam.push(rhydon);
-  opponentTeam.push(tauros);
+  playerTeam.push(rhydonP);
+  playerTeam.push(taurosP);
+  opponentTeam.push(taurosO);
+  opponentTeam.push(rhydonO);
 };
 
 //Calculates the damage of a Pokemon using a move on an opponent.
@@ -111,15 +113,89 @@ Battle.prototype.effectiveness = function(move, opponent) {
   return effectiveness;
 }
 
+//Checks if an attack has critted (random chance for double damage).
+Battle.prototype.critCheck = function() {
+  var damage = 1;
+  if ((Math.floor(Math.random() * 16 + 1) === 16)){
+    damage = 2;
+  }
+  return damage;
+}
+
+Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
+  var string = ""
+  currentPokemon.moves.forEach(function(move, i){
+    string += (i + 1) + ": " + move.name + "\n";
+  });
+
+  string += "5: Switch";
+
+  return string;
+}
+
+
 //Prompt to pick a move.
-Battle.prototype.pickMove = function(currentPokemon) {
-  return currentPokemon.moves[prompt("Pick a move (Keys: 1, 2)") - 1]
+Battle.prototype.pickMove = function(currentPokemon, currentTeam) {
+  var input = -1;
+  while (input <= 0 || input >= 6) {
+    input = prompt(this.showMoves(currentPokemon, currentTeam));
+    if (input <= 0 || input >= 6) {
+      console.log("Please enter a valid key!");
+    }
+  }
+
+  return input;
 }
 
 //Randomly picks opponent's move.
 Battle.prototype.opponentMove = function(opponent) {
   var random = Math.floor(Math.random() * opponent.moves.length);
   return opponent.moves[random];
+}
+
+Battle.prototype.switch = function(playerTeam) {
+  var switchInput = this.switchText(playerTeam, 1);
+  var temp = playerTeam[0];
+  playerTeam[0] = playerTeam[switchInput];
+  console.log("Player switched " + temp.name + " with " + playerTeam[0].name + "!");
+  playerTeam[switchInput] = temp;
+}
+
+Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
+  playerTeam.shift();
+  var won = this.winnerCheck(playerTeam);
+  if (won === true) {
+    return;
+  }
+  if (whoAttacks === false) {
+    var switchInput = this.switchText(playerTeam, 0);
+    var temp = playerTeam[0];
+    playerTeam[0] = playerTeam[switchInput - 1];
+    playerTeam[switchInput - 1] = temp;
+    console.log("You sent out " + playerTeam[0].name + "!");
+  } 
+  else {
+    console.log("Enemy sent out " + playerTeam[0].name + "!")
+  }
+}
+
+Battle.prototype.switchText = function(playerTeam, startIndex) {
+  console.log("Pick a pokemon to switch to: \n");
+  var switchInput = prompt(this.showSwitch(playerTeam, startIndex));
+  return switchInput;
+}
+
+Battle.prototype.showSwitch = function(playerTeam, startIndex) {
+  var string = "";
+  var add = 0;
+  if (startIndex === 0) {
+    add = 1;
+  }
+  for (var i = startIndex; i < playerTeam.length; i++) {
+    string += (i + add) + ": " + playerTeam[i].name + "\n";
+  }
+
+  return string;
 }
 
 //Returns the faster of two Pokemon.
@@ -140,39 +216,45 @@ Battle.prototype.checkFaint = function(player) {
   return (player.health < 0);
 }
 
-//Checks if an attack has critted (random chance for double damage).
-Battle.prototype.critCheck = function() {
-  var damage = 1;
-  if ((Math.floor(Math.random() * 16 + 1) === 16)){
-    damage = 2;
-  }
-  return damage;
-}
-
 //Attack logic - calculates damage, outputs strings based on results, checks for fainting.
-Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam) {
+Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam, whoAttacks) {
+  var died = false;
+  var attackString = "";
+  var defenderString = "";
+  if (whoAttacks === true) {
+    defenderString = "Enemy ";
+  } else {
+    attackString = "Enemy ";
+  }
   var attackDamage = battle.calculateDamage(attacker, pickedMove, defender);
-  console.log(attacker.name + " used " + pickedMove.name + "!");
+  console.log(attackString + attacker.name + " used " + pickedMove.name + "!");
   defender.health -= attackDamage;
-  console.log(attacker.name + " dealt " + attackDamage + " damage to " + defender.name);
-  console.log(defender.name + " has " + defender.health + " health remaining.")
+  console.log(attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name);
+  console.log(defenderString + defender.name + " has " + defender.health + " health remaining.")
   var defenderFaint = this.checkFaint(defender);
   if (defenderFaint === true) {
-    defenderTeam.shift();
-    this.winnerCheck(defenderTeam);
+    died = true;
+    console.log(defenderString + defender.name + " has fainted!")
+    this.deadSwitch(defenderTeam, whoAttacks);
   }
+  return died;
 }
 
 Battle.prototype.winnerCheck = function(defenderTeam) {
+  var won = false;
   if (defenderTeam.length === 0) {
     console.log("Player has lost the game!");
+    won = true;
   }
+  return won;
 }
 
 //Object declarations to create objects to fill out teams.
 var battle = new Battle();
-var tauros = new Tauros();
-var rhydon = new Rhydon();
+var taurosP = new Tauros();
+var rhydonP = new Rhydon();
+var taurosO = new Tauros();
+var rhydonO = new Rhydon();
 battle.createTeams(battle.playerTeam, battle.opponentTeam);
 
 //Status update
@@ -181,24 +263,28 @@ while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
   console.log("Current Pokemon: " + battle.playerTeam[0].name + " Health: " + battle.playerTeam[0].health);
   console.log("Opponent Pokemon: " + battle.opponentTeam[0].name + " Health: " + battle.opponentTeam[0].health);
   //Pick move
-  console.log("Pick a move: ")
-  console.log("1. " + battle.playerTeam[0].moves[0].name);
-  console.log("2. " + battle.playerTeam[0].moves[1].name);
-  var pickedMove = battle.pickMove(battle.playerTeam[0]);
+  var pickedMove = battle.pickMove(battle.playerTeam[0], battle.playerTeam);
   //Opponent picks move
   var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
   //Check speed
+  if (pickedMove == 5) {
+    battle.switch(battle.playerTeam);
+  } else {
+    pickedMove = battle.playerTeam[0].moves[pickedMove - 1];
+    console.log(pickedMove);
+  }
   var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
+  var died = false;
   //Faster goes first
-  if (playerGoesFirst === true) {
-    battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam);
-    if (battle.opponentTeam.length > 0) {
-      battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam);
+  if (playerGoesFirst === true && pickedMove != 5) {
+    died = battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam, true);
+    if (battle.opponentTeam.length > 0 && died === false) {
+      battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
     }
   } else {
-    battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam);
-    if (battle.playerTeam.length > 0) {
-      battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam);
+    died = battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
+    if (battle.playerTeam.length > 0 && pickedMove != 5 && died === false) {
+      battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam, true);
     }
   }
 }
