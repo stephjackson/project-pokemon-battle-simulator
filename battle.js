@@ -122,6 +122,7 @@ Battle.prototype.critCheck = function() {
   return damage;
 }
 
+//Shows options at beginning of turn
 Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
   var string = ""
   currentPokemon.moves.forEach(function(move, i){
@@ -130,9 +131,10 @@ Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
 
   string += "5: Switch";
 
-  return string;
-}
+  console.log(string);
 
+  return;
+}
 
 //Prompt to pick a move.
 Battle.prototype.pickMove = function(currentPokemon, currentTeam) {
@@ -143,7 +145,6 @@ Battle.prototype.pickMove = function(currentPokemon, currentTeam) {
       console.log("Please enter a valid key!");
     }
   }
-
   return input;
 }
 
@@ -153,6 +154,7 @@ Battle.prototype.opponentMove = function(opponent) {
   return opponent.moves[random];
 }
 
+//Handles chosen switching.
 Battle.prototype.switch = function(playerTeam) {
   var switchInput = this.switchText(playerTeam, 1);
   var temp = playerTeam[0];
@@ -161,6 +163,7 @@ Battle.prototype.switch = function(playerTeam) {
   playerTeam[switchInput] = temp;
 }
 
+//Handles switching on faint.
 Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
   playerTeam.shift();
   var won = this.winnerCheck(playerTeam);
@@ -179,12 +182,14 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
   }
 }
 
+//Gives the prompt to switch.
 Battle.prototype.switchText = function(playerTeam, startIndex) {
   console.log("Pick a pokemon to switch to: \n");
   var switchInput = prompt(this.showSwitch(playerTeam, startIndex));
   return switchInput;
 }
 
+//Shows switch options in prompt.
 Battle.prototype.showSwitch = function(playerTeam, startIndex) {
   var string = "";
   var add = 0;
@@ -240,6 +245,7 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
   return died;
 }
 
+//Checks to see if you won on faint.
 Battle.prototype.winnerCheck = function(defenderTeam) {
   var won = false;
   if (defenderTeam.length === 0) {
@@ -249,7 +255,10 @@ Battle.prototype.winnerCheck = function(defenderTeam) {
   return won;
 }
 
-//Object declarations to create objects to fill out teams.
+//Status update
+battleCanvas = new BattleCanvas();
+battleCanvas.createBoard();
+
 var battle = new Battle();
 var taurosP = new Tauros();
 var rhydonP = new Rhydon();
@@ -257,7 +266,6 @@ var taurosO = new Tauros();
 var rhydonO = new Rhydon();
 battle.createTeams(battle.playerTeam, battle.opponentTeam);
 
-//Status update
 while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
 {
   console.log("Current Pokemon: " + battle.playerTeam[0].name + " Health: " + battle.playerTeam[0].health);
@@ -271,7 +279,6 @@ while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
     battle.switch(battle.playerTeam);
   } else {
     pickedMove = battle.playerTeam[0].moves[pickedMove - 1];
-    console.log(pickedMove);
   }
   var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
   var died = false;
