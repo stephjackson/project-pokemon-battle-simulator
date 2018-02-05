@@ -138,7 +138,7 @@ Battle.prototype.critCheck = function() {
 }
 
 Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
-  var string = "\n"
+  var string = "\nChoose a move: \n"
   currentPokemon.moves.forEach(function(move, i){
     string += (i + 1) + ": " + move.name + " ";
   });
@@ -173,6 +173,14 @@ Battle.prototype.switch = function(playerTeam, switchInput) {
   return string;
 }
 
+Battle.prototype.switchOnFaint = function(playerTeam, switchInput) {
+  var temp = playerTeam[0];
+  playerTeam[0] = playerTeam[switchInput];
+  var string = "Go! " + playerTeam[0].name + "!";
+  playerTeam[switchInput] = temp;
+  return string;
+}
+
 //Handles switching on faint.
 Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
   playerTeam.shift();
@@ -183,11 +191,13 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
     return;
   }
   if (whoAttacks === false) {
-    var switchInput = this.switchText(playerTeam, 0);
-    var temp = playerTeam[0];
-    playerTeam[0] = playerTeam[switchInput - 1];
-    playerTeam[switchInput - 1] = temp;
-    this.eventString += "You sent out " + playerTeam[0].name + "!\n";
+    this.turnPhase = 4;
+    return;
+    // var switchInput = this.switchText(playerTeam, 0);
+    // var temp = playerTeam[0];
+    // playerTeam[0] = playerTeam[switchInput - 1];
+    // playerTeam[switchInput - 1] = temp;
+    // this.eventString += "You sent out " + playerTeam[0].name + "!\n";
   } 
   else {
     this.eventString += "Enemy sent out " + playerTeam[0].name + "!\n";
@@ -244,7 +254,7 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
     attackString = "Enemy ";
   }
   var attackDamage = battle.calculateDamage(attacker, pickedMove, defender);
-  this.eventString += attackString + attacker.name + " used " + pickedMove.name + "!\n";
+  this.eventString += attackString + attacker.name + " used " + pickedMove.name + "! ";
   defender.health -= attackDamage;
   this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
   var defenderFaint = this.checkFaint(defender);
@@ -331,8 +341,7 @@ document.onkeypress = function(e) {
       if (battle.playerTeam.length > 0 && battle.pickedMove != 5 && died === false && battle.playerTeam[0].health > 0) {
         battle.attack(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true);
       }
-    }
-    if (battle.gameOver === false) {
+    } if (battle.gameOver === false && battle.turnPhase != 4) {
       //Pick move
       battle.eventString = battle.eventString.substring(0, battle.eventString.length - 1);
       battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
@@ -351,8 +360,25 @@ document.onkeypress = function(e) {
     if (e.key > 0 && e.key < battle.playerTeam.length + 1) {
       battle.switchChoice = e.key;
       this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
-      console.log(opponentsMove);
       battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
+      battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+      battleCanvas.drawBoard(battle.eventString, 
+        battle.playerTeam[0].backSprite, 
+        battle.opponentTeam[0].frontSprite, 
+        battle.playerTeam[0].health, 
+        battle.playerTeam[0].maxHealth, 
+        battle.playerTeam[0].name,
+        battle.opponentTeam[0].name,
+        battle.opponentTeam[0].health);
+      battle.clearEventString();
+      battle.turnPhase = 0;
+    }
+  } else if (battle.turnPhase === "dead" && battle.gameOver === false) {
+    console.log("hi! " + e.key);
+    console.log(battle.playerTeam.length)
+    if (e.key >= 0 && e.key <= battle.playerTeam.length) {
+      battle.switchChoice = e.key - 1;
+      battle.eventString += battle.switchOnFaint(battle.playerTeam, battle.switchChoice);
       battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
       battleCanvas.drawBoard(battle.eventString, 
         battle.playerTeam[0].backSprite, 
@@ -385,36 +411,18 @@ document.onkeypress = function(e) {
       battle.clearEventString();
       battle.turnPhase = 10;
     }
+    if (battle.turnPhase === 4) {
+      battle.eventString += "\nWho would you like to send out?\n";
+      battle.eventString += battle.showSwitch(battle.playerTeam, 0);
+      battleCanvas.drawBoard(battle.eventString, 
+        "img/RGB_Red_Back.png", 
+        battle.opponentTeam[0].frontSprite, 
+        battle.playerTeam[0].health, 
+        battle.playerTeam[0].maxHealth, 
+        battle.playerTeam[0].name,
+        battle.opponentTeam[0].name,
+        battle.opponentTeam[0].health);
+      battle.clearEventString();
+      battle.turnPhase = "dead";
+    }
   }
-
-
-// while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
-// {
-//   console.log("Current Pokemon: " + battle.playerTeam[0].name + " Health: " + battle.playerTeam[0].health);
-//   console.log("Opponent Pokemon: " + battle.opponentTeam[0].name + " Health: " + battle.opponentTeam[0].health);
-//   //Pick move
-
-//   var pickedMove = battle.pickMove(battle.playerTeam[0], battle.playerTeam);
-//   //Opponent picks move
-//   var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
-//   //Check speed
-//   if (pickedMove == 5) {
-//     battle.switch(battle.playerTeam);
-//   } else {
-//     pickedMove = battle.playerTeam[0].moves[pickedMove - 1];
-//   }
-//   var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
-//   var died = false;
-//   //Faster goes first
-//   if (playerGoesFirst === true && pickedMove != 5) {
-//     died = battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam, true);
-//     if (battle.opponentTeam.length > 0 && died === false) {
-//       battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
-//     }
-//   } else {
-//     died = battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
-//     if (battle.playerTeam.length > 0 && pickedMove != 5 && died === false) {
-//       battle.attack(battle.playerTeam[0], battle.opponentTeam[0], pickedMove, battle.opponentTeam, true);
-//     }
-//   }
-// }
