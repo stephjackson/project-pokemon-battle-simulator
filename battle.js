@@ -75,6 +75,7 @@ function Battle() {
   this.pickedMove;
   this.gameOver = false;
   this.eventString = "";
+  this.switchChoice;
 };
 
 Battle.prototype.clearEventString = function() {
@@ -164,12 +165,12 @@ Battle.prototype.opponentMove = function(opponent) {
 }
 
 //Handles chosen switching.
-Battle.prototype.switch = function(playerTeam) {
-  var switchInput = this.switchText(playerTeam, 1);
+Battle.prototype.switch = function(playerTeam, switchInput) {
   var temp = playerTeam[0];
   playerTeam[0] = playerTeam[switchInput];
-  console.log("Player switched " + temp.name + " with " + playerTeam[0].name + "!");
+  var string = "Player switched " + temp.name + " with " + playerTeam[0].name + "!";
   playerTeam[switchInput] = temp;
+  return string;
 }
 
 //Handles switching on faint.
@@ -177,6 +178,8 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
   playerTeam.shift();
   var won = this.winnerCheck(playerTeam);
   if (won === true) {
+    battle.gameOver = true;
+    this.turnPhase = 3;
     return;
   }
   if (whoAttacks === false) {
@@ -287,32 +290,45 @@ battleCanvas.drawBoard(battle.eventString,
 battle.clearEventString();
 
 document.onkeypress = function(e) {
-  if (battle.turnPhase === 0 && battle.gameOver === false && battle.playerTeam.length > 0 && battle.opponentTeam.length > 0) {
-    if (e.key > 0 && e.key < 6) {
+  var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
+  if (battle.turnPhase === 0 && battle.gameOver === false) {
+    if (e.key > 0 && e.key < 6 && battle.playerTeam.length > 1) {
       battle.pickedMove = e.key;
-      console.log(battle.pickedMove);
       battle.turnPhase++;
-    }
-  } else if (battle.turnPhase === 1 && battle.gameOver === false && battle.playerTeam.length > 0 && battle.opponentTeam.length > 0) {
-    //Opponent picks move
-    var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
-    //Check speed
-    if (battle.pickedMove == 5) {
-      battle.switch(battle.playerTeam);
+      if (battle.pickedMove == 5) {
+        battle.turnPhase++;
+        battle.eventString += battle.showSwitch(battle.playerTeam, 1);
+        battleCanvas.drawBoard(battle.eventString, 
+          battle.playerTeam[0].backSprite, 
+          battle.opponentTeam[0].frontSprite, 
+          battle.playerTeam[0].health, 
+          battle.playerTeam[0].maxHealth, 
+          battle.playerTeam[0].name,
+          battle.opponentTeam[0].name,
+          battle.opponentTeam[0].health);
+        battle.clearEventString();
+      }
+    } else if (e.key > 0 && e.key < 5) {
+      battle.pickedMove = e.key;
+      battle.turnPhase++;
     } else {
-      battle.pickedMove = battle.playerTeam[0].moves[battle.pickedMove - 1];
+      console.log("Something went wrong!");
     }
+  } else if (battle.turnPhase === 1 && battle.gameOver === false) {
+    //Opponent picks move
+    //Check speed
+    battle.pickedMove = battle.playerTeam[0].moves[battle.pickedMove - 1];
     var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
     var died = false;
     //Faster goes first
     if (playerGoesFirst === true && battle.pickedMove != 5) {
       died = battle.attack(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true);
-      if (battle.opponentTeam.length > 0 && died === false) {
+      if (battle.opponentTeam.length > 0 && died === false && battle.opponentTeam[0].health > 0) {
         battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
       }
     } else {
       died = battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
-      if (battle.playerTeam.length > 0 && battle.pickedMove != 5 && died === false) {
+      if (battle.playerTeam.length > 0 && battle.pickedMove != 5 && died === false && battle.playerTeam[0].health > 0) {
         battle.attack(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true);
       }
     }
@@ -331,8 +347,46 @@ document.onkeypress = function(e) {
       battle.clearEventString();
       battle.turnPhase = 0;
     }
+  } else if (battle.turnPhase === 2 && battle.gameOver === false) {
+    if (e.key > 0 && e.key < battle.playerTeam.length + 1) {
+      battle.switchChoice = e.key;
+      this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
+      console.log(opponentsMove);
+      battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
+      battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+      battleCanvas.drawBoard(battle.eventString, 
+        battle.playerTeam[0].backSprite, 
+        battle.opponentTeam[0].frontSprite, 
+        battle.playerTeam[0].health, 
+        battle.playerTeam[0].maxHealth, 
+        battle.playerTeam[0].name,
+        battle.opponentTeam[0].name,
+        battle.opponentTeam[0].health);
+      battle.clearEventString();
+      battle.turnPhase = 0;
+    }
   }
-}
+  if (battle.turnPhase === 3) {
+    if (battle.playerTeam.length === 0) {
+      battle.eventString += "\nYou lost! You whited out!";
+    } else if (battle.opponentTeam.length === 0) {
+      battle.eventString += "\nYou won! You got 6435$ for winning!";
+    } else {
+      console.log("Something bad happened!");
+    }
+      battleCanvas.drawBoard(battle.eventString, 
+        "img/RGB_Red_Back.png", 
+        "img/Spr_RG_Blue_3.png", 
+        0, 
+        0, 
+        "Red",
+        "Blue",
+        0);
+      battle.clearEventString();
+      battle.turnPhase = 10;
+    }
+  }
+
 
 // while (battle.playerTeam.length > 0 && battle.opponentTeam.length > 0)
 // {
