@@ -3,15 +3,38 @@ var attack = {
   bodySlam: {
     name:     "Body Slam",
     type:     "normal",
+    stat:     "attack",
     power:    85,
     accuracy: 100
   },
   earthquake: {
     name:     "Earthquake",
     type:     "ground",
+    stat:     "attack",
     power:    100,
     accuracy: 100
-  }
+  },
+  blizzard: {
+    name:     "Blizzard",
+    type:     "ice",
+    stat:     "special",
+    power:    100,
+    accuracy: 100
+  },
+  hyperBeam: {
+    name:     "Hyper Beam",
+    type:     "normal",
+    stat:     "attack",
+    power:    150,
+    accuracy: 100
+  },
+  rockSlide: {
+    name:     "Rock Slide",
+    type:     "rock",
+    stat:     "attack",
+    power:    75,
+    accuracy: 100
+  },
 };
 
 //First value is attack type, second value is defense multiplier
@@ -20,20 +43,30 @@ var typeChart = {
     normal: 1,
     ground: 1,
     rock:   .5,
+    ice:    1,
     none:   1
   },
   ground: {
     normal: 1,
     ground: 1,
     rock:   2,
+    ice:    1,
     none:   1
   },
   rock: {
     normal: 1,
     ground: .5,
     rock:   1,
+    ice:    2,
     none:   1 
   },
+  ice: {
+    normal: 1,
+    ground: 2,
+    rock:   1,
+    ice:    .5,
+    none:   1 
+  }
 }
 
 //Pokemon constructors
@@ -47,7 +80,7 @@ function Rhydon() {
   this.defense     = 338, 
   this.special     = 188, 
   this.speed       = 178,
-  this.moves       = [attack.bodySlam, attack.earthquake],
+  this.moves       = [attack.bodySlam, attack.earthquake, attack.hyperBeam, attack.rockSlide],
   this.frontSprite = "img/Spr_1b_112.png",
   this.backSprite  = "img/Spr_b_g1_112.png"
 };
@@ -62,7 +95,7 @@ function Tauros() {
   this.defense     = 288, 
   this.special     = 238, 
   this.speed       = 318,
-  this.moves       = [attack.bodySlam, attack.earthquake],
+  this.moves       = [attack.bodySlam, attack.earthquake, attack.blizzard, attack.hyperBeam],
   this.frontSprite = "img/Spr_1b_128.png",
   this.backSprite  = "img/Spr_b_g1_128.png"
 };
@@ -92,13 +125,25 @@ Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
 
 //Calculates the damage of a Pokemon using a move on an opponent.
 Battle.prototype.calculateDamage = function(attacker, move, opponent) {
-  var damage = (42 * move.power * attacker.attack / opponent.defense / 50 + 2);
+  var damage = this.baseDamage(attacker, move, opponent);
   var STAB = this.findSTAB(attacker, move);
   var random = this.damageRNG();
   var effectiveness = this.effectiveness(move, opponent);
   var crit = this.critCheck()
   damage = damage * STAB * effectiveness * random * crit;
   return Math.round(damage);
+}
+
+Battle.prototype.baseDamage = function(attacker, move, opponent) {
+  var damage = 0;
+  if (move.stat === "attack") {
+    damage = (42 * move.power * attacker.attack / opponent.defense / 50 + 2)
+  } else if (move.stat === "special") {
+    damage = (42 * move.power * attacker.special / opponent.special / 50 + 2)
+  } else {
+    console.log("Prolly a status move!");
+  }
+  return damage;
 }
 
 //Pokemon of a given type using attacks with the same type get a bonus of 1.5x to the attack.
@@ -132,6 +177,7 @@ Battle.prototype.effectiveness = function(move, opponent) {
 Battle.prototype.critCheck = function() {
   var damage = 1;
   if ((Math.floor(Math.random() * 16 + 1) === 16)){
+    this.eventString += "Critical hit!\n";
     damage = 2;
   }
   return damage;
@@ -357,7 +403,7 @@ document.onkeypress = function(e) {
       battle.turnPhase = 0;
     }
   } else if (battle.turnPhase === 2 && battle.gameOver === false) {
-    if (e.key > 0 && e.key < battle.playerTeam.length + 1) {
+    if (e.key > 0 && e.key < battle.playerTeam.length) {
       battle.switchChoice = e.key;
       this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
       battle.attack(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false);
@@ -372,6 +418,8 @@ document.onkeypress = function(e) {
         battle.opponentTeam[0].health);
       battle.clearEventString();
       battle.turnPhase = 0;
+    } else {
+      console.log ("Something went wrong!");
     }
   } else if (battle.turnPhase === "dead" && battle.gameOver === false) {
     console.log("hi! " + e.key);
