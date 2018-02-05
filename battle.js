@@ -18,8 +18,8 @@ var attack = {
     name:     "Blizzard",
     type:     "ice",
     stat:     "special",
-    power:    100,
-    accuracy: 100
+    power:    120,
+    accuracy: 70
   },
   hyperBeam: {
     name:     "Hyper Beam",
@@ -33,7 +33,7 @@ var attack = {
     type:     "rock",
     stat:     "attack",
     power:    75,
-    accuracy: 100
+    accuracy: 90
   },
 };
 
@@ -125,6 +125,10 @@ Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
 
 //Calculates the damage of a Pokemon using a move on an opponent.
 Battle.prototype.calculateDamage = function(attacker, move, opponent) {
+  var hit = this.checkHit(move);
+  if (hit === false) {
+    return 0;
+  }
   var damage = this.baseDamage(attacker, move, opponent);
   var STAB = this.findSTAB(attacker, move);
   var random = this.damageRNG();
@@ -132,6 +136,15 @@ Battle.prototype.calculateDamage = function(attacker, move, opponent) {
   var crit = this.critCheck()
   damage = damage * STAB * effectiveness * random * crit;
   return Math.round(damage);
+}
+
+Battle.prototype.checkHit = function(move) {
+  var hitBool = true;
+  var hit = Math.floor(Math.random() * 100 - move.accuracy);
+  if (hit > 0) {
+    hitBool = false;
+  }
+  return hitBool;
 }
 
 Battle.prototype.baseDamage = function(attacker, move, opponent) {
@@ -302,7 +315,11 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
   var attackDamage = battle.calculateDamage(attacker, pickedMove, defender);
   this.eventString += attackString + attacker.name + " used " + pickedMove.name + "! ";
   defender.health -= attackDamage;
-  this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
+  if (attackDamage > 0) {
+    this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
+  } else {
+    this.eventString += "It missed!\n";
+  }
   var defenderFaint = this.checkFaint(defender);
   if (defenderFaint === true) {
     died = true;
@@ -422,8 +439,6 @@ document.onkeypress = function(e) {
       console.log ("Something went wrong!");
     }
   } else if (battle.turnPhase === "dead" && battle.gameOver === false) {
-    console.log("hi! " + e.key);
-    console.log(battle.playerTeam.length)
     if (e.key >= 0 && e.key <= battle.playerTeam.length) {
       battle.switchChoice = e.key - 1;
       battle.eventString += battle.switchOnFaint(battle.playerTeam, battle.switchChoice);
