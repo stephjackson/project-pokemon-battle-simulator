@@ -67,6 +67,15 @@ var attack = {
     power:    75,
     accuracy: 90
   },
+  thunderWave: {
+    name:     "Thunder Wave",
+    type:     "electric",
+    mech:     "status",
+    effect:   "PAR",
+    chance:   "100",
+    target:   "opponent",
+    accuracy: 100
+  }
 };
 
 //First value is attack type, second value is defense multiplier
@@ -129,6 +138,8 @@ function Rhydon() {
   this.speed       = 178,
   this.startSpd    = 178,
   this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
   this.moves       = [attack.bodySlam, attack.earthquake, attack.hyperBeam, attack.rockSlide],
   this.frontSprite = "img/Spr_1b_112.png",
   this.backSprite  = "img/Spr_b_g1_112.png"
@@ -149,6 +160,8 @@ function Tauros() {
   this.speed       = 318,
   this.startSpd    = 318,
   this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
   this.moves       = [attack.bodySlam, attack.earthquake, attack.blizzard, attack.hyperBeam],
   this.frontSprite = "img/Spr_1b_128.png",
   this.backSprite  = "img/Spr_b_g1_128.png"
@@ -169,7 +182,9 @@ function Alakazam() {
   this.speed       = 338,
   this.startSpd    = 338,
   this.statStages  = [0,0,0,0],
-  this.moves       = [attack.psychic, attack.reflect, attack.recover],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.psychic, attack.reflect, attack.recover, attack.thunderWave],
   this.frontSprite = "img/Spr_1b_065.png",
   this.backSprite  = "img/Spr_b_g1_065.png"
 }
@@ -265,7 +280,7 @@ Battle.prototype.effectiveness = function(move, opponent) {
 Battle.prototype.critCheck = function() {
   var damage = 1;
   if ((Math.floor(Math.random() * 16 + 1) === 16)){
-    this.eventString += "Critical hit!";
+    this.eventString += "Critical hit!\n";
     damage = 2;
   }
   return damage;
@@ -330,11 +345,6 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
   if (whoAttacks === false) {
     this.turnPhase = 4;
     return;
-    // var switchInput = this.switchText(playerTeam, 0);
-    // var temp = playerTeam[0];
-    // playerTeam[0] = playerTeam[switchInput - 1];
-    // playerTeam[switchInput - 1] = temp;
-    // this.eventString += "You sent out " + playerTeam[0].name + "!\n";
   } 
   else {
     this.eventString += "Enemy sent out " + playerTeam[0].name + "!\n";
@@ -387,35 +397,46 @@ Battle.prototype.checkFaint = function(defender, defenderString, whoAttacks, def
 
 //Attack logic - calculates damage, outputs strings based on results, checks for fainting.
 Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
-  var died = false;
   var crit = this.critCheck()
   var attackDamage = battle.calculateDamage(attacker, pickedMove, defender, crit);
   defender.health -= attackDamage;
   if (attackDamage > 0) {
-    this.eventString += "\n" + attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
+    this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
   } else {
     this.eventString += "It missed!\n";
   }
-  return died;
+  return false;
 }
 
 Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
   if(pickedMove.statName === "health") {
     if (attacker.health >= attacker.maxHealth) {
-      this.eventString += "\n" + attackString + attacker.name + "'s health is full!\n"
+      this.eventString += attackString + attacker.name + "'s health is full!\n"
     } else {
       attacker.health += Math.round(attacker.maxHealth / 2);
       if (attacker.health > attacker.maxHealth) {
         attacker.health = attacker.maxHealth;
       }
-      this.eventString += "\n" + attackString + attacker.name + " gained some health!\n"
+      this.eventString += attackString + attacker.name + " gained some health!\n"
     }
   } else if (attacker.statStages[pickedMove.stat] >= 6) {
-    this.eventString += "\n" + attackString + attacker.name + "'s " + pickedMove.statName + " is maxed out!\n"
+    this.eventString += attackString + attacker.name + "'s " + pickedMove.statName + " is maxed out!\n"
   } else {
     attacker.statStages[pickedMove.stat] += pickedMove.stage;
     attacker[pickedMove.statName] = attacker[pickedMove.origStat] * ((attacker.statStages[pickedMove.stat] + 2) / 2);
-    this.eventString += "\n" + attacker.name + "'s " + pickedMove.statName + " increased!\n";
+    this.eventString += attacker.name + "'s " + pickedMove.statName + " increased!\n";
+  }
+  return false;
+}
+
+Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
+  if (defender.status !== "NON") {
+    this.eventString += " It failed!\n";
+  } else {
+    defender.status = pickedMove.effect;
+    if (defender.status === "PAR") {
+      this.eventString += defenderString + defender.name + " is now paralyzed!\n";
+    }
   }
   return false;
 }
@@ -429,15 +450,31 @@ Battle.prototype.attackRouter = function(attacker, defender, pickedMove, defende
   } else {
     attackString = "Enemy ";
   }
-  this.eventString += attackString + attacker.name + " used " + pickedMove.name + "! ";
-  if(pickedMove.mech === "attack") {
+  this.eventString += attackString + attacker.name + " used " + pickedMove.name + "!\n";
+  var skipMove = this.skippedMove(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
+  if(pickedMove.mech === "attack" && skipMove === true) {
     died = this.attack(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString);
-  }
-  if(pickedMove.mech === "stat") {
+  } else if(pickedMove.mech === "stat" && skipMove === true) {
     died = this.stat(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
+  } else if(pickedMove.mech === "status" && skipMove === true) {
+    died = this.status(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
+  } else {
+    console.log("Something bad happened in the attack router!");
   }
   var died = this.checkFaint(defender, defenderString, whoAttacks, defenderTeam);
   return died;
+}
+
+Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
+  var canMove = true;
+  if (attacker.status === "PAR") {
+    var roll = Math.floor(Math.random() * 2)
+    if (roll === 0) {
+        canMove = false;
+        this.eventString += attackString + attacker.name + " is paralyzed!\n";
+      }
+    }
+  return canMove;
 }
 
 //Checks to see if you won on faint.
@@ -472,7 +509,9 @@ battleCanvas.drawBoard(battle.eventString,
   battle.playerTeam[0].maxHealth, 
   battle.playerTeam[0].name,
   battle.opponentTeam[0].name,
-  battle.opponentTeam[0].health);
+  battle.opponentTeam[0].health,
+  battle.playerTeam[0].status,
+  battle.opponentTeam[0].status);
 battle.clearEventString();
 
 document.onkeypress = function(e) {
@@ -491,7 +530,9 @@ document.onkeypress = function(e) {
           battle.playerTeam[0].maxHealth, 
           battle.playerTeam[0].name,
           battle.opponentTeam[0].name,
-          battle.opponentTeam[0].health);
+          battle.opponentTeam[0].health,
+          battle.playerTeam[0].status,
+          battle.opponentTeam[0].status);
         battle.clearEventString();
       }
     } else if (e.key > 0 && e.key < 5) {
@@ -528,7 +569,9 @@ document.onkeypress = function(e) {
         battle.playerTeam[0].maxHealth, 
         battle.playerTeam[0].name,
         battle.opponentTeam[0].name,
-        battle.opponentTeam[0].health);
+        battle.opponentTeam[0].health,
+        battle.playerTeam[0].status,
+        battle.opponentTeam[0].status);
       battle.clearEventString();
       battle.turnPhase = 0;
     }
@@ -545,7 +588,9 @@ document.onkeypress = function(e) {
         battle.playerTeam[0].maxHealth, 
         battle.playerTeam[0].name,
         battle.opponentTeam[0].name,
-        battle.opponentTeam[0].health);
+        battle.opponentTeam[0].health,
+        battle.playerTeam[0].status,
+        battle.opponentTeam[0].status);
       battle.clearEventString();
       battle.turnPhase = 0;
     } else {
@@ -563,7 +608,9 @@ document.onkeypress = function(e) {
         battle.playerTeam[0].maxHealth, 
         battle.playerTeam[0].name,
         battle.opponentTeam[0].name,
-        battle.opponentTeam[0].health);
+        battle.opponentTeam[0].health,
+        battle.playerTeam[0].status,
+        battle.opponentTeam[0].status);
       battle.clearEventString();
       battle.turnPhase = 0;
     }
@@ -597,7 +644,9 @@ document.onkeypress = function(e) {
         battle.playerTeam[0].maxHealth, 
         battle.playerTeam[0].name,
         battle.opponentTeam[0].name,
-        battle.opponentTeam[0].health);
+        battle.opponentTeam[0].health,
+        battle.playerTeam[0].status,
+        battle.opponentTeam[0].status);
       battle.clearEventString();
       battle.turnPhase = "dead";
     }

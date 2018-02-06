@@ -4,7 +4,7 @@ function BattleCanvas() {
   this.fontName = "PokemonGB";
 }
 
-BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealth, maxHealth, myName, oppName, oppHealth) {
+BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealth, maxHealth, myName, oppName, oppHealth, myStatus, oppStatus) {
   var background = new Image();
   var player = new Image();
   var opponent = new Image();
@@ -24,8 +24,14 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     that.ctx.font = "19px PokemonGB";
     that.ctx.fillText(curHealth, 395, 348);
     that.ctx.fillText(maxHealth, 475, 348);
-    that.ctx.fillText("HP:" + oppHealth, 208, 56);
+    that.ctx.fillText("HP:" + oppHealth, 168, 56);
+    if (oppStatus !== "NON") {
+      that.ctx.fillText(oppStatus, 292, 56);
+    }
     that.ctx.fillText(myName, 324, 284);
+    if (myStatus !== "NON") {
+      that.ctx.fillText(myStatus, 524, 284);
+    }
     that.ctx.fillText(oppName, 4, 56);
     which = that;
     player.addEventListener("load", function() {
