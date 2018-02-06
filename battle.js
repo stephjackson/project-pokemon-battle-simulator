@@ -1,6 +1,16 @@
 window.onload = function() {
 //Object to hold attacks.
 var attack = {
+  agility: {
+    name:     "Agility",
+    type:     "psychic",
+    stat:     3,
+    statName: "speed",
+    origStat: "startSpd",
+    mech:     "stat",
+    stage:    2,
+    accuracy: 100,
+  },
   blizzard: {
     name:     "Blizzard",
     type:     "ice",
@@ -21,6 +31,15 @@ var attack = {
     effect:   "PAR",
     chance:   30,
     power:    85,
+    accuracy: 100
+  },
+  drillPeck: {
+    name:     "Drill Peck",
+    type:     "flying",
+    stat:     "attack",
+    mech:     "attack",
+    chance:   0,
+    power:    80,
     accuracy: 100
   },
   earthquake: {
@@ -78,6 +97,17 @@ var attack = {
     power:    75,
     accuracy: 90
   },
+  thunderbolt: {
+    name:     "Thunderbolt",
+    type:     "electric",
+    stat:     "special",
+    mech:     "attack",
+    mech2:    "status",
+    effect:   "PAR",
+    chance:   10,
+    power:    95,
+    accuracy: 100
+  },
   thunderWave: {
     name:     "Thunder Wave",
     type:     "electric",
@@ -92,44 +122,74 @@ var attack = {
 //First value is attack type, second value is defense multiplier
 var typeChart = {
   normal: {
-    normal:  1,
-    ground:  1,
-    rock:    .5,
-    psychic: 1,
-    ice:     1,
-    none:    1
+    normal:   1,
+    flying:   1,
+    ground:   1,
+    rock:     .5,
+    electric: 1,
+    psychic:  1,
+    ice:      1,
+    none:     1
+  },
+  flying: {
+    normal:   1,
+    flying:   1,
+    ground:   1,
+    rock:     .5,
+    electric: .5,
+    psychic:  1,
+    ice:      1,
+    none:     1
   },
   ground: {
-    normal:  1,
-    ground:  1,
-    rock:    2,
-    psychic: 1,
-    ice:     1,
-    none:    1
+    normal:   1,
+    flying:   0,
+    ground:   1,
+    rock:     2,
+    electric: 2,
+    psychic:  1,
+    ice:      1,
+    none:     1
   },
   rock: {
-    normal:  1,
-    ground:  .5,
-    rock:    1,
-    psychic: 1,
-    ice:     2,
-    none:    1 
+    normal:   1,
+    flying:   2,
+    ground:   .5,
+    rock:     1,
+    electric: 1,
+    psychic:  1,
+    ice:      2,
+    none:     1 
+  },
+  electric: {
+    normal:   1,
+    flying:   2,
+    ground:   0,
+    rock:     1,
+    electric: .5,
+    psychic:  1,
+    ice:      1,
+    none:     1 
   },
   psychic: {
-    normal:  1,
-    ground:  1,
-    rock:    1,
-    psychic: .5,
-    ice:     1,
-    none:    1 
+    normal:   1,
+    flying:   1,
+    ground:   1,
+    rock:     1,
+    electric: 1,
+    psychic:  .5,
+    ice:      1,
+    none:     1 
   },
   ice: {
-    normal:  1,
-    ground:  2,
-    rock:    1,
-    psychic: 1,
-    ice:     .5,
-    none:    1 
+    normal:   1,
+    flying:   2,
+    ground:   2,
+    rock:     1,
+    electric: 1,
+    psychic:  1,
+    ice:      .5,
+    none:     1 
   }
 }
 
@@ -200,6 +260,29 @@ function Alakazam() {
   this.backSprite  = "img/Spr_b_g1_065.png"
 }
 
+function Zapdos() {
+  this.name        = "Zapdos",
+  this.type1       = "electric",
+  this.type2       = "flying", 
+  this.health      = 383, 
+  this.maxHealth   = 383,
+  this.attack      = 278, 
+  this.startAtt    = 278, 
+  this.defense     = 268, 
+  this.startDef    = 268, 
+  this.special     = 348, 
+  this.startSpec   = 348, 
+  this.speed       = 298,
+  this.startSpd    = 298,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.thunderbolt, attack.drillPeck, attack.thunderWave, attack.agility],
+  this.frontSprite = "img/Spr_1b_145.png",
+  this.backSprite  = "img/Spr_b_g1_145.png"
+}
+
+
 //The main battle function constructor.
 function Battle() {
   this.playerTeam = [];
@@ -217,9 +300,11 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
+  playerTeam.push(zapdosP);
   playerTeam.push(taurosP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
+  opponentTeam.push(zapdosO);
   opponentTeam.push(zamO);
   opponentTeam.push(taurosO);
   opponentTeam.push(rhydonO);
@@ -286,7 +371,7 @@ Battle.prototype.effectiveness = function(move, opponent) {
 //Checks if an attack has critted (random chance for double damage).
 Battle.prototype.critCheck = function() {
   var damage = 1;
-  if (16 === 16){
+  if (Math.floor(Math.random() * 16 + 1) === 16){
     this.eventString = this.eventString.slice(0,this.eventString.length - 1);
     this.eventString += " Critical hit!\n";
     damage = 2;
@@ -331,7 +416,7 @@ Battle.prototype.switch = function(playerTeam, switchInput) {
   playerTeam[0] = playerTeam[switchInput];
   var string = "Player switched " + temp.name + " with " + playerTeam[0].name + "!";
   playerTeam[switchInput] = temp;
-  this.statusStat(playerTeam[0]);
+  this.resetStats(playerTeam[0]);
   return string;
 }
 
@@ -341,6 +426,10 @@ Battle.prototype.resetStats = function(pokemon) {
   pokemon.speed = pokemon.startSpd;
   pokemon.special = pokemon.startSpec;
   pokemon.statStages = [0,0,0,0];
+  if (pokemon.status = "PAR") {
+    pokemon.speed /= 2;
+    pokemon.statStages[3] = -1;
+  }
 }
 
 Battle.prototype.switchOnFaint = function(playerTeam, switchInput) {
@@ -349,7 +438,7 @@ Battle.prototype.switchOnFaint = function(playerTeam, switchInput) {
   playerTeam[0] = playerTeam[switchInput];
   var string = "Go! " + playerTeam[0].name + "!";
   playerTeam[switchInput] = temp;
-  this.statusStat(playerTeam[0]);
+  this.resetStats(playerTeam[0]);
   return string;
 }
 
@@ -400,8 +489,9 @@ Battle.prototype.checkSpeed = function(player, opponent) {
     if (coinFlip === 0) {
       faster = false;
     }
+  } else {
+    faster = (player.speed > opponent.speed);
   }
-  faster = (player.speed > opponent.speed);
   return faster;
 }
 
@@ -445,7 +535,6 @@ Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, w
   } else if (attacker.statStages[pickedMove.stat] >= 6) {
     this.eventString += attackString + attacker.name + "'s " + pickedMove.statName + " is maxed out!\n"
   } else {
-    console.log(attacker.defense);
     attacker.statStages[pickedMove.stat] += pickedMove.stage;
     attacker[pickedMove.statName] = attacker[pickedMove.origStat] * ((attacker.statStages[pickedMove.stat] + 2) / 2);
     this.eventString += attacker.name + "'s " + pickedMove.statName + " increased!\n";
@@ -479,8 +568,7 @@ Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam,
 
 Battle.prototype.statusStat = function(defender) {
   if (defender.status === "PAR") {
-    defender.statStages[3] = -1;
-    defender.speed = defender.speed * ((defender.statStages[3] + 2) / 2)
+    defender.speed /= 2;
   }
 }
 
@@ -539,9 +627,10 @@ Battle.prototype.winnerCheck = function(defenderTeam) {
 }
 
 //Status update
-battleCanvas = new BattleCanvas();
-
+var battleCanvas = new BattleCanvas();
 var battle = new Battle();
+var zapdosP = new Zapdos();
+var zapdosO = new Zapdos();
 var taurosP = new Tauros();
 var rhydonP = new Rhydon();
 var taurosO = new Tauros();
@@ -567,7 +656,7 @@ battleCanvas.drawBoard(battle.eventString,
 battle.clearEventString();
 
 document.onkeypress = function(e) {
-  console.log(battle.opponentTeam[0].status);
+  console.log(battle.playerTeam[0].speed);
   var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
   if (battle.turnPhase === 0 && battle.gameOver === false) {
     if (e.key > 0 && e.key < 6 && battle.playerTeam.length > 1) {
