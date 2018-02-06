@@ -6,14 +6,20 @@ var attack = {
     type:     "ice",
     stat:     "special",
     mech:     "attack",
+    mech2:    "status",
+    effect:   "FRZ",
+    chance:   10,
     power:    120,
-    accuracy: 70
+    accuracy: 90
   },
   bodySlam: {
     name:     "Body Slam",
     type:     "normal",
     stat:     "attack",
     mech:     "attack",
+    mech2:    "status",
+    effect:   "PAR",
+    chance:   30,
     power:    85,
     accuracy: 100
   },
@@ -22,6 +28,7 @@ var attack = {
     type:     "ground",
     stat:     "attack",
     mech:     "attack",
+    chance:   0,
     power:    100,
     accuracy: 100
   },
@@ -30,6 +37,7 @@ var attack = {
     type:     "normal",
     stat:     "attack",
     mech:     "attack",
+    chance:   0,
     power:    150,
     accuracy: 100
   },
@@ -38,6 +46,7 @@ var attack = {
     type:     "psychic",
     stat:     "special",
     mech:     "attack",
+    chance:   0,
     power:    90,
     accuracy: 100
   },
@@ -64,6 +73,8 @@ var attack = {
     type:     "rock",
     stat:     "attack",
     mech:     "attack",
+    mech2:    "",
+    chance:   0,
     power:    75,
     accuracy: 90
   },
@@ -72,7 +83,7 @@ var attack = {
     type:     "electric",
     mech:     "status",
     effect:   "PAR",
-    chance:   "100",
+    chance:   100,
     target:   "opponent",
     accuracy: 100
   }
@@ -206,9 +217,9 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
+  playerTeam.push(taurosP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
-  playerTeam.push(taurosP);
   opponentTeam.push(zamO);
   opponentTeam.push(taurosO);
   opponentTeam.push(rhydonO);
@@ -216,10 +227,6 @@ Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
 
 //Calculates the damage of a Pokemon using a move on an opponent.
 Battle.prototype.calculateDamage = function(attacker, move, opponent, crit) {
-  var hit = this.checkHit(move);
-  if (hit === false) {
-    return 0;
-  }
   var damage = this.baseDamage(attacker, move, opponent);
   var STAB = this.findSTAB(attacker, move);
   var random = this.damageRNG();
@@ -279,8 +286,9 @@ Battle.prototype.effectiveness = function(move, opponent) {
 //Checks if an attack has critted (random chance for double damage).
 Battle.prototype.critCheck = function() {
   var damage = 1;
-  if ((Math.floor(Math.random() * 16 + 1) === 16)){
-    this.eventString += "Critical hit!\n";
+  if (16 === 16){
+    this.eventString = this.eventString.slice(0,this.eventString.length - 1);
+    this.eventString += " Critical hit!\n";
     damage = 2;
   }
   return damage;
@@ -318,18 +326,30 @@ Battle.prototype.opponentMove = function(opponent) {
 
 //Handles chosen switching.
 Battle.prototype.switch = function(playerTeam, switchInput) {
+  this.resetStats(playerTeam[0]);
   var temp = playerTeam[0];
   playerTeam[0] = playerTeam[switchInput];
   var string = "Player switched " + temp.name + " with " + playerTeam[0].name + "!";
   playerTeam[switchInput] = temp;
+  this.statusStat(playerTeam[0]);
   return string;
 }
 
+Battle.prototype.resetStats = function(pokemon) {
+  pokemon.attack = pokemon.startAtt;
+  pokemon.defense = pokemon.startDef;
+  pokemon.speed = pokemon.startSpd;
+  pokemon.special = pokemon.startSpec;
+  pokemon.statStages = [0,0,0,0];
+}
+
 Battle.prototype.switchOnFaint = function(playerTeam, switchInput) {
+  this.resetStats(playerTeam[0]);
   var temp = playerTeam[0];
   playerTeam[0] = playerTeam[switchInput];
   var string = "Go! " + playerTeam[0].name + "!";
   playerTeam[switchInput] = temp;
+  this.statusStat(playerTeam[0]);
   return string;
 }
 
@@ -402,6 +422,9 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
   defender.health -= attackDamage;
   if (attackDamage > 0) {
     this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
+    if (pickedMove.mech2 = "status") {
+      var filler = this.status(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
+    }
   } else {
     this.eventString += "It missed!\n";
   }
@@ -422,6 +445,7 @@ Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, w
   } else if (attacker.statStages[pickedMove.stat] >= 6) {
     this.eventString += attackString + attacker.name + "'s " + pickedMove.statName + " is maxed out!\n"
   } else {
+    console.log(attacker.defense);
     attacker.statStages[pickedMove.stat] += pickedMove.stage;
     attacker[pickedMove.statName] = attacker[pickedMove.origStat] * ((attacker.statStages[pickedMove.stat] + 2) / 2);
     this.eventString += attacker.name + "'s " + pickedMove.statName + " increased!\n";
@@ -431,14 +455,33 @@ Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, w
 
 Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
   if (defender.status !== "NON") {
-    this.eventString += " It failed!\n";
+    this.eventString += "It failed!\n";
   } else {
-    defender.status = pickedMove.effect;
+    // var chance = Math.floor(Math.round() * pickedMove.chance
+    var chanceBool = true;
+    var chance = Math.floor(Math.random() * 100 - pickedMove.chance);
+    if (chance > 0) {
+      chanceBool = false;
+    }
+    if (chanceBool === true) {
+      defender.status = pickedMove.effect;
+    }
     if (defender.status === "PAR") {
       this.eventString += defenderString + defender.name + " is now paralyzed!\n";
+      this.statusStat(defender);
+    }
+    if (defender.status === "FRZ") {
+      this.eventString += defenderString + defender.name + " is frozen solid!\n";
     }
   }
   return false;
+}
+
+Battle.prototype.statusStat = function(defender) {
+  if (defender.status === "PAR") {
+    defender.statStages[3] = -1;
+    defender.speed = defender.speed * ((defender.statStages[3] + 2) / 2)
+  }
 }
 
 Battle.prototype.attackRouter = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
@@ -473,7 +516,15 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
         canMove = false;
         this.eventString += attackString + attacker.name + " is paralyzed!\n";
       }
+    } else if (attacker.status === "FRZ") {
+    canMove = false;
+    this.eventString += attackString + attacker.name + " is frozen solid!\n"
+  } else {
+    canMove = this.checkHit(pickedMove);
+    if (canMove === false) {
+      this.eventString += "It missed!\n"
     }
+  }
   return canMove;
 }
 
@@ -511,10 +562,12 @@ battleCanvas.drawBoard(battle.eventString,
   battle.opponentTeam[0].name,
   battle.opponentTeam[0].health,
   battle.playerTeam[0].status,
-  battle.opponentTeam[0].status);
+  battle.opponentTeam[0].status,
+  battle.opponentTeam[0].maxHealth);
 battle.clearEventString();
 
 document.onkeypress = function(e) {
+  console.log(battle.opponentTeam[0].status);
   var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
   if (battle.turnPhase === 0 && battle.gameOver === false) {
     if (e.key > 0 && e.key < 6 && battle.playerTeam.length > 1) {
@@ -532,7 +585,8 @@ document.onkeypress = function(e) {
           battle.opponentTeam[0].name,
           battle.opponentTeam[0].health,
           battle.playerTeam[0].status,
-          battle.opponentTeam[0].status);
+          battle.opponentTeam[0].status,
+          battle.opponentTeam[0].maxHealth);
         battle.clearEventString();
       }
     } else if (e.key > 0 && e.key < 5) {
@@ -571,7 +625,8 @@ document.onkeypress = function(e) {
         battle.opponentTeam[0].name,
         battle.opponentTeam[0].health,
         battle.playerTeam[0].status,
-        battle.opponentTeam[0].status);
+        battle.opponentTeam[0].status,
+        battle.opponentTeam[0].maxHealth);
       battle.clearEventString();
       battle.turnPhase = 0;
     }
@@ -590,7 +645,8 @@ document.onkeypress = function(e) {
         battle.opponentTeam[0].name,
         battle.opponentTeam[0].health,
         battle.playerTeam[0].status,
-        battle.opponentTeam[0].status);
+        battle.opponentTeam[0].status,
+        battle.opponentTeam[0].maxHealth);
       battle.clearEventString();
       battle.turnPhase = 0;
     } else {
@@ -610,7 +666,8 @@ document.onkeypress = function(e) {
         battle.opponentTeam[0].name,
         battle.opponentTeam[0].health,
         battle.playerTeam[0].status,
-        battle.opponentTeam[0].status);
+        battle.opponentTeam[0].status,
+        battle.opponentTeam[0].maxHealth);
       battle.clearEventString();
       battle.turnPhase = 0;
     }
@@ -630,6 +687,10 @@ document.onkeypress = function(e) {
         0, 
         "Red",
         "Blue",
+        0,
+        "",
+        "",
+        0,
         0);
       battle.clearEventString();
       battle.turnPhase = 10;
@@ -646,7 +707,8 @@ document.onkeypress = function(e) {
         battle.opponentTeam[0].name,
         battle.opponentTeam[0].health,
         battle.playerTeam[0].status,
-        battle.opponentTeam[0].status);
+        battle.opponentTeam[0].status,
+        battle.opponentTeam[0].maxHealth);
       battle.clearEventString();
       battle.turnPhase = "dead";
     }
