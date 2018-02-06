@@ -304,6 +304,7 @@ function Rhydon() {
   this.moves       = [attack.bodySlam, attack.earthquake, attack.hyperBeam, attack.rockSlide],
   this.frontSprite = "img/Spr_1b_112.png",
   this.backSprite  = "img/Spr_b_g1_112.png"
+  this.hyperBeam   = false;
 };
 
 function Tauros() {
@@ -325,7 +326,8 @@ function Tauros() {
   this.turnStat    = 0,
   this.moves       = [attack.bodySlam, attack.earthquake, attack.blizzard, attack.hyperBeam],
   this.frontSprite = "img/Spr_1b_128.png",
-  this.backSprite  = "img/Spr_b_g1_128.png"
+  this.backSprite  = "img/Spr_b_g1_128.png",
+  this.hyperBeam   = false
 };
 
 function Zapdos() {
@@ -368,17 +370,17 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
+  playerTeam.push(taurosP);
   playerTeam.push(chanseyP);
   playerTeam.push(exP);
   playerTeam.push(zapdosP);
-  playerTeam.push(taurosP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
+  opponentTeam.push(taurosO);
   opponentTeam.push(exO);
   opponentTeam.push(chanseyO);
   opponentTeam.push(zapdosO);
   opponentTeam.push(zamO);
-  opponentTeam.push(taurosO);
   opponentTeam.push(rhydonO);
 };
 
@@ -587,10 +589,17 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
     if (pickedMove.mech2 = "status") {
       var filler = this.status(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
     }
+    if (pickedMove.name === "Hyper Beam") {
+      this.hyperBeamStatus(attacker);
+    }
   } else {
     this.eventString += "It missed!\n";
   }
   return false;
+}
+
+Battle.prototype.hyperBeamStatus = function(attacker) {
+  attacker.hyperBeam = true;
 }
 
 Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
@@ -693,6 +702,10 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
     } else {
       this.eventString += attackString + attacker.name + " is asleep!\n"
     }
+  } else if (attacker.hyperBeam === true) {
+    canMove = false;
+    attacker.hyperBeam = false;
+    this.eventString += attackString + attacker.name + " is recharging!\n"
   } else {
     canMove = this.checkHit(pickedMove);
     if (canMove === false) {
