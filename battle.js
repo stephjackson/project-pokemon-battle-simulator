@@ -73,9 +73,7 @@ var attack = {
     name:     "Recover",
     type:     "normal",
     statName: "health",
-    mech:     "stat",
-    power:    90,
-    accuracy: 100
+    mech:     "stat"
   },
   reflect: {
     name:     "Reflect",
@@ -96,6 +94,12 @@ var attack = {
     chance:   0,
     power:    75,
     accuracy: 90
+  },
+  softboiled: {
+    name:     "Softboiled",
+    type:     "normal",
+    statName: "health",
+    mech:     "stat"
   },
   thunderbolt: {
     name:     "Thunderbolt",
@@ -537,16 +541,18 @@ Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, w
   } else {
     attacker.statStages[pickedMove.stat] += pickedMove.stage;
     attacker[pickedMove.statName] = attacker[pickedMove.origStat] * ((attacker.statStages[pickedMove.stat] + 2) / 2);
+    if (attacker.status === "PAR") {
+      this.statusStat(attacker);
+    }
     this.eventString += attacker.name + "'s " + pickedMove.statName + " increased!\n";
   }
   return false;
 }
 
 Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
-  if (defender.status !== "NON") {
+  if (defender.status !== "NON" && pickedMove.chance === 100) {
     this.eventString += "It failed!\n";
   } else {
-    // var chance = Math.floor(Math.round() * pickedMove.chance
     var chanceBool = true;
     var chance = Math.floor(Math.random() * 100 - pickedMove.chance);
     if (chance > 0) {
@@ -554,13 +560,13 @@ Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam,
     }
     if (chanceBool === true) {
       defender.status = pickedMove.effect;
-    }
-    if (defender.status === "PAR") {
-      this.eventString += defenderString + defender.name + " is now paralyzed!\n";
-      this.statusStat(defender);
-    }
-    if (defender.status === "FRZ") {
-      this.eventString += defenderString + defender.name + " is frozen solid!\n";
+      if (defender.status === "PAR") {
+        this.eventString += defenderString + defender.name + " is now paralyzed!\n";
+        this.statusStat(defender);
+      }
+      if (defender.status === "FRZ") {
+        this.eventString += defenderString + defender.name + " is frozen solid!\n";
+      }
     }
   }
   return false;
