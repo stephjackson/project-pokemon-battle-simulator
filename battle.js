@@ -150,6 +150,7 @@ var typeChart = {
     flying:   1,
     ground:   1,
     rock:     .5,
+    grass:    1,
     electric: 1,
     psychic:  1,
     ice:      1,
@@ -160,6 +161,7 @@ var typeChart = {
     flying:   1,
     ground:   1,
     rock:     .5,
+    grass:    2,
     electric: .5,
     psychic:  1,
     ice:      1,
@@ -170,6 +172,7 @@ var typeChart = {
     flying:   0,
     ground:   1,
     rock:     2,
+    grass:    .5,
     electric: 2,
     psychic:  1,
     ice:      1,
@@ -180,9 +183,21 @@ var typeChart = {
     flying:   2,
     ground:   .5,
     rock:     1,
+    grass:    1,
     electric: 1,
     psychic:  1,
     ice:      2,
+    none:     1 
+  },
+  grass: {
+    normal:   1,
+    flying:   .5,
+    ground:   2,
+    rock:     2,
+    grass:    .5,
+    electric: 1,
+    psychic:  1,
+    ice:      1,
     none:     1 
   },
   electric: {
@@ -190,6 +205,7 @@ var typeChart = {
     flying:   2,
     ground:   0,
     rock:     1,
+    grass:    .5,
     electric: .5,
     psychic:  1,
     ice:      1,
@@ -200,6 +216,7 @@ var typeChart = {
     flying:   1,
     ground:   1,
     rock:     1,
+    grass:    1,
     electric: 1,
     psychic:  .5,
     ice:      1,
@@ -210,6 +227,7 @@ var typeChart = {
     flying:   2,
     ground:   2,
     rock:     1,
+    grass:    2,
     electric: 1,
     psychic:  1,
     ice:      .5,
@@ -279,7 +297,7 @@ function Exeggutor() {
   this.statStages  = [0,0,0,0],
   this.status      = "NON",
   this.turnStat    = 0,
-  this.moves       = [attack.sleepPowder],
+  this.moves       = [attack.sleepPowder, attack.psychic, attack.sleepPowder, attack.sleepPowder],
   this.frontSprite = "img/Spr_1b_103.png",
   this.backSprite  = "img/Spr_b_g1_103.png"
 }
@@ -370,18 +388,18 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
+  playerTeam.push(zapdosP);
   playerTeam.push(taurosP);
   playerTeam.push(chanseyP);
   playerTeam.push(exP);
-  playerTeam.push(zapdosP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
+  opponentTeam.push(rhydonO);
   opponentTeam.push(taurosO);
   opponentTeam.push(exO);
   opponentTeam.push(chanseyO);
   opponentTeam.push(zapdosO);
   opponentTeam.push(zamO);
-  opponentTeam.push(rhydonO);
 };
 
 //Calculates the damage of a Pokemon using a move on an opponent.
@@ -390,6 +408,12 @@ Battle.prototype.calculateDamage = function(attacker, move, opponent, crit) {
   var STAB = this.findSTAB(attacker, move);
   var random = this.damageRNG();
   var effectiveness = this.effectiveness(move, opponent);
+  if (effectiveness >= 2) {
+    this.eventString += "It's super effective!\n";
+  }
+  if (effectiveness <= .5 && effectiveness > 0) {
+    this.eventString += "It's not very effective!\n";
+  }
   damage = damage * STAB * effectiveness * random * crit;
   return Math.round(damage);
 }
@@ -706,6 +730,9 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
     canMove = false;
     attacker.hyperBeam = false;
     this.eventString += attackString + attacker.name + " is recharging!\n"
+  } else if (this.effectiveness(pickedMove, defender) === 0) {
+    canMove = false;
+    this.eventString += defenderString + defender.name + " is immune to " + pickedMove.name + "!\n";
   } else {
     canMove = this.checkHit(pickedMove);
     if (canMove === false) {
