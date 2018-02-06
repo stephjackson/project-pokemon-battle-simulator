@@ -60,6 +60,17 @@ var attack = {
     power:    150,
     accuracy: 100
   },
+  iceBeam: {
+    name:     "Ice Beam",
+    type:     "ice",
+    stat:     "special",
+    mech:     "attack",
+    mech2:    "status",
+    effect:   "FRZ",
+    chance:   10,
+    power:    95,
+    accuracy: 100
+  },
   psychic: {
     name:     "Psychic",
     type:     "psychic",
@@ -94,6 +105,15 @@ var attack = {
     chance:   0,
     power:    75,
     accuracy: 90
+  },
+  sleepPowder: {
+    name:     "Sleep Powder",
+    type:     "grass",
+    mech:     "status",
+    effect:   "SLP",
+    chance:   100,
+    target:   "opponent",
+    accuracy: 75
   },
   softboiled: {
     name:     "Softboiled",
@@ -198,6 +218,72 @@ var typeChart = {
 }
 
 //Pokemon constructors
+function Alakazam() {
+  this.name        = "Alakazam",
+  this.type1       = "psychic",
+  this.type2       = "none", 
+  this.health      = 313, 
+  this.maxHealth   = 313,
+  this.attack      = 198, 
+  this.startAtt    = 198, 
+  this.defense     = 188, 
+  this.startDef    = 188, 
+  this.special     = 368, 
+  this.startSpec   = 368, 
+  this.speed       = 338,
+  this.startSpd    = 338,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.psychic, attack.reflect, attack.recover, attack.thunderWave],
+  this.frontSprite = "img/Spr_1b_065.png",
+  this.backSprite  = "img/Spr_b_g1_065.png"
+}
+
+function Chansey() {
+  this.name        = "Chansey",
+  this.type1       = "normal",
+  this.type2       = "none", 
+  this.health      = 703, 
+  this.maxHealth   = 703,
+  this.attack      = 108, 
+  this.startAtt    = 108, 
+  this.defense     = 108, 
+  this.startDef    = 108, 
+  this.special     = 308, 
+  this.startSpec   = 308, 
+  this.speed       = 198,
+  this.startSpd    = 198,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.iceBeam, attack.softboiled, attack.thunderWave, attack.thunderbolt],
+  this.frontSprite = "img/Spr_1b_113.png",
+  this.backSprite  = "img/Spr_b_g1_113.png"
+}
+
+function Exeggutor() {
+  this.name        = "Exeggutor",
+  this.type1       = "grass",
+  this.type2       = "psychic", 
+  this.health      = 393, 
+  this.maxHealth   = 393,
+  this.attack      = 288, 
+  this.startAtt    = 288, 
+  this.defense     = 268, 
+  this.startDef    = 268, 
+  this.special     = 348, 
+  this.startSpec   = 348, 
+  this.speed       = 208,
+  this.startSpd    = 208,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.sleepPowder],
+  this.frontSprite = "img/Spr_1b_103.png",
+  this.backSprite  = "img/Spr_b_g1_103.png"
+}
+
 function Rhydon() {
   this.name        = "Rhydon",
   this.type1       = "ground",
@@ -242,28 +328,6 @@ function Tauros() {
   this.backSprite  = "img/Spr_b_g1_128.png"
 };
 
-function Alakazam() {
-  this.name        = "Alakazam",
-  this.type1       = "psychic",
-  this.type2       = "none", 
-  this.health      = 313, 
-  this.maxHealth   = 313,
-  this.attack      = 198, 
-  this.startAtt    = 198, 
-  this.defense     = 188, 
-  this.startDef    = 188, 
-  this.special     = 368, 
-  this.startSpec   = 368, 
-  this.speed       = 338,
-  this.startSpd    = 338,
-  this.statStages  = [0,0,0,0],
-  this.status      = "NON",
-  this.turnStat    = 0,
-  this.moves       = [attack.psychic, attack.reflect, attack.recover, attack.thunderWave],
-  this.frontSprite = "img/Spr_1b_065.png",
-  this.backSprite  = "img/Spr_b_g1_065.png"
-}
-
 function Zapdos() {
   this.name        = "Zapdos",
   this.type1       = "electric",
@@ -304,10 +368,14 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
+  playerTeam.push(chanseyP);
+  playerTeam.push(exP);
   playerTeam.push(zapdosP);
   playerTeam.push(taurosP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
+  opponentTeam.push(exO);
+  opponentTeam.push(chanseyO);
   opponentTeam.push(zapdosO);
   opponentTeam.push(zamO);
   opponentTeam.push(taurosO);
@@ -430,7 +498,7 @@ Battle.prototype.resetStats = function(pokemon) {
   pokemon.speed = pokemon.startSpd;
   pokemon.special = pokemon.startSpec;
   pokemon.statStages = [0,0,0,0];
-  if (pokemon.status = "PAR") {
+  if (pokemon.status === "PAR") {
     pokemon.speed /= 2;
     pokemon.statStages[3] = -1;
   }
@@ -542,7 +610,7 @@ Battle.prototype.stat = function(attacker, defender, pickedMove, defenderTeam, w
     attacker.statStages[pickedMove.stat] += pickedMove.stage;
     attacker[pickedMove.statName] = attacker[pickedMove.origStat] * ((attacker.statStages[pickedMove.stat] + 2) / 2);
     if (attacker.status === "PAR") {
-      this.statusStat(attacker);
+      this.statusStat(attacker);  
     }
     this.eventString += attacker.name + "'s " + pickedMove.statName + " increased!\n";
   }
@@ -566,6 +634,10 @@ Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam,
       }
       if (defender.status === "FRZ") {
         this.eventString += defenderString + defender.name + " is frozen solid!\n";
+      }
+      if (defender.status === "SLP") {
+        defender.turnStat = this.generateSleep();
+        this.eventString += defenderString + defender.name + " has fallen asleep!\n";
       }
     }
   }
@@ -610,9 +682,17 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
         canMove = false;
         this.eventString += attackString + attacker.name + " is paralyzed!\n";
       }
-    } else if (attacker.status === "FRZ") {
+  } else if (attacker.status === "FRZ") {
     canMove = false;
     this.eventString += attackString + attacker.name + " is frozen solid!\n"
+  } else if (attacker.status === "SLP") {
+    canMove = false;
+    attacker.turnStat--;
+    if (attacker.turnStat <= 0) {
+      this.wakeUp(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString);
+    } else {
+      this.eventString += attackString + attacker.name + " is asleep!\n"
+    }
   } else {
     canMove = this.checkHit(pickedMove);
     if (canMove === false) {
@@ -620,6 +700,15 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
     }
   }
   return canMove;
+}
+
+Battle.prototype.generateSleep = function() {
+  return (Math.floor(Math.random() * 4 + 2))
+}
+
+Battle.prototype.wakeUp = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
+  attacker.status = "NON",
+  this.eventString += attackString + attacker.name + " woke up!\n"
 }
 
 //Checks to see if you won on faint.
@@ -643,6 +732,10 @@ var taurosO = new Tauros();
 var rhydonO = new Rhydon();
 var zamP = new Alakazam();
 var zamO = new Alakazam();
+var chanseyP = new Chansey();
+var chanseyO = new Chansey();
+var exP = new Exeggutor();
+var exO = new Exeggutor();
 battle.createTeams(battle.playerTeam, battle.opponentTeam);
 
 battle.eventString += ("Enemy sent out " + battle.opponentTeam[0].name + "!\n");
