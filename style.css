@@ -4,3 +4,7 @@
   font-weight: 400;
   src: local('PokemonGB'), url(font/PokemonGB.ttf) format('truetype');
 }
+
+canvas {
+  font-family: "PokemonGB";
+}
