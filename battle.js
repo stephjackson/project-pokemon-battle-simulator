@@ -197,9 +197,12 @@ Battle.prototype.critCheck = function() {
 }
 
 Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
-  var string = "\nChoose a move: \n"
+  var string = "\nChoose a move: "
   currentPokemon.moves.forEach(function(move, i){
     string += (i + 1) + ": " + move.name + " ";
+    if (i === 1) {
+      string += "\n";
+    }
   });
 
   string += "5: Switch";
@@ -313,7 +316,7 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
     attackString = "Enemy ";
   }
   var attackDamage = battle.calculateDamage(attacker, pickedMove, defender);
-  this.eventString += attackString + attacker.name + " used " + pickedMove.name + "! ";
+  this.eventString += attackString + attacker.name + " used " + pickedMove.name + "!\n";
   defender.health -= attackDamage;
   if (attackDamage > 0) {
     this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";

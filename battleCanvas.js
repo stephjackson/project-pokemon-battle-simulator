@@ -8,8 +8,8 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
   var background = new Image();
   var player = new Image();
   var opponent = new Image();
-  var x = 30, y = 436;
-  this.ctx.font = "16px Helvetica";
+  var x = 30, y = 426;
+  this.ctx.font = "12px PokemonGB";
   background.src = "img/battlefield.png";
   player.src = pokemon1;
   opponent.src = pokemon2;
@@ -21,7 +21,7 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
       that.ctx.fillText(string[i], x, y);
       y += 20;
     }
-    that.ctx.font = "30px Helvetica";
+    that.ctx.font = "19px PokemonGB";
     that.ctx.fillText(curHealth, 395, 348);
     that.ctx.fillText(maxHealth, 475, 348);
     that.ctx.fillText("HP: " + oppHealth, 160, 60);

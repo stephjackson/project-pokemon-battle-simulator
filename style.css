@@ -2,6 +2,5 @@
   font-family: 'PokemonGB';
   font-style: normal;
   font-weight: 400;
-  src: local('PokemonGB'),
-       url(font/PokemonGB.ttf) format('truetype');
+  src: local('PokemonGB'), url(font/PokemonGB.ttf) format('truetype');
 }
