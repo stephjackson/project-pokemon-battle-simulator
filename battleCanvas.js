@@ -24,7 +24,7 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     that.ctx.font = "19px PokemonGB";
     that.ctx.fillText(curHealth, 395, 348);
     that.ctx.fillText(maxHealth, 475, 348);
-    that.ctx.fillText("HP: " + oppHealth, 164, 56);
+    that.ctx.fillText("HP:" + oppHealth, 208, 56);
     that.ctx.fillText(myName, 324, 284);
     that.ctx.fillText(oppName, 4, 56);
     which = that;

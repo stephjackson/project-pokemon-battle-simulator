@@ -376,8 +376,13 @@ Battle.prototype.checkSpeed = function(player, opponent) {
 }
 
 //Checks if a defending Pokemon has fainted.
-Battle.prototype.checkFaint = function(player) {
-  return (player.health < 0);
+Battle.prototype.checkFaint = function(defender, defenderString, whoAttacks, defenderTeam) {
+  var defenderFaint = (defender.health <= 0);
+  if (defenderFaint === true) {
+    this.eventString += defenderString + defender.name + " has fainted! ";
+    this.deadSwitch(defenderTeam, whoAttacks);
+  }
+  return defenderFaint;
 }
 
 //Attack logic - calculates damage, outputs strings based on results, checks for fainting.
@@ -431,12 +436,7 @@ Battle.prototype.attackRouter = function(attacker, defender, pickedMove, defende
   if(pickedMove.mech === "stat") {
     died = this.stat(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
   }
-  var defenderFaint = this.checkFaint(defender);
-  if (defenderFaint === true) {
-    died = true;
-    this.eventString += defenderString + defender.name + " has fainted! ";
-    this.deadSwitch(defenderTeam, whoAttacks);
-  }
+  var died = this.checkFaint(defender, defenderString, whoAttacks, defenderTeam);
   return died;
 }
 
