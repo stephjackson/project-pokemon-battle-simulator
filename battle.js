@@ -773,6 +773,30 @@ var battleMusic = new Howl({
   src: ['sound/battleMusic.mp3']
 });
 
+var victory = new Howl({
+  src: ['sound/victory.mp3']
+});
+
+var hit = new Howl({
+  src: ['sound/hit.mp3']
+});
+
+var notVeryEffective = new Howl({
+  src: ['sound/notVeryEffective.mp3']
+});
+
+var superEffective = new Howl({
+  src: ['sound/superEffective.mp3']
+});
+
+var status = new Howl({
+  src: ['sound/status.mp3']
+});
+
+var faint = new Howl({
+  src: ['sound/faint.mp3']
+});
+
 //The main battle function constructor.
 function Battle() {
   this.playerTeam = [];
@@ -842,16 +866,27 @@ Battle.prototype.shuffle = function(array) {
 }
 
 //Calculates the damage of a Pokemon using a move on an opponent.
-Battle.prototype.calculateDamage = function(attacker, move, opponent, crit) {
+Battle.prototype.calculateDamage = function(attacker, move, opponent, crit, whoAttacks) {
   var damage = this.baseDamage(attacker, move, opponent);
   var STAB = this.findSTAB(attacker, move);
   var random = this.damageRNG();
   var effectiveness = this.effectiveness(move, opponent);
+  if (effectiveness === 1) {
+    if (whoAttacks === true) {
+      hit.play();
+    }
+  }
   if (effectiveness >= 2) {
     this.eventString += "It's super effective!\n";
+    if (whoAttacks === true) {
+      superEffective.play();
+    }
   }
   if (effectiveness <= .5 && effectiveness > 0) {
     this.eventString += "It's not very effective!\n";
+    if (whoAttacks === true) {
+      notVeryEffective.play();
+    }
   }
   damage = damage * STAB * effectiveness * random * crit;
   return Math.round(damage);
@@ -989,6 +1024,7 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
     return;
   }
   if (whoAttacks === false) {
+    faint.play();
     this.turnPhase = 4;
     return;
   } 
@@ -1065,7 +1101,7 @@ Battle.prototype.explosionFoo = function(attacker, attackString, attackTeam, who
 //Attack logic - calculates damage, outputs strings based on results, checks for fainting.
 Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString, attackTeam) {
   var crit = this.critCheck()
-  var attackDamage = battle.calculateDamage(attacker, pickedMove, defender, crit);
+  var attackDamage = battle.calculateDamage(attacker, pickedMove, defender, crit, whoAttacks);
   defender.health -= attackDamage;
   if (attackDamage > 0) {
     this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
@@ -1161,8 +1197,14 @@ Battle.prototype.attackRouter = function(attacker, defender, pickedMove, defende
     died = this.attack(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString, attackTeam);
   } else if(pickedMove.mech === "stat" && skipMove === true) {
     died = this.stat(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
+    if (whoAttacks === true) {
+      status.play();
+    }
   } else if(pickedMove.mech === "status" && skipMove === true) {
     died = this.status(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
+    if (whoAttacks === true) {
+      status.play();
+    }
   } else {
     console.log("Something bad happened in the attack router!");
   }
@@ -1376,6 +1418,8 @@ document.onkeypress = function(e) {
         "",
         0,
         0);
+      battleMusic.stop();
+      victory.play();
       battle.clearEventString();
       battle.turnPhase = 10;
     }
