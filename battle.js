@@ -1231,7 +1231,7 @@ window.onload = function() {
   Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
     var canMove = true;
     if (attacker.status === "PAR") {
-      var roll = Math.floor(Math.random() * 3)
+      var roll = Math.floor(Math.random() * 4)
       if (roll === 0) {
           canMove = false;
           this.eventString += attackString + attacker.name + " is paralyzed!\n";
