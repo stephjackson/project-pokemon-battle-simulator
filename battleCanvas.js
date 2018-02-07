@@ -4,6 +4,15 @@ function BattleCanvas() {
   this.fontName = "PokemonGB";
 }
 
+BattleCanvas.prototype.titleScreen = function() {
+  var background = new Image();
+  background.src = "img/titlescreen.png";
+  that = this;
+  background.addEventListener("load", function() {
+    that.ctx.drawImage(background, 0, 0);
+  });
+}
+
 BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealth, maxHealth, myName, oppName, oppHealth, myStatus, oppStatus, oppMaxHealth) {
   var background = new Image();
   var player = new Image();
