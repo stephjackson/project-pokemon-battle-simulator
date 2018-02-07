@@ -11,6 +11,16 @@ var attack = {
     stage:    2,
     accuracy: 100,
   },
+  amnesia: {
+    name:     "Amnesia",
+    type:     "psychic",
+    stat:     2,
+    statName: "special",
+    origStat: "startSpec",
+    mech:     "stat",
+    stage:    2,
+    accuracy: 100,
+  },
   blizzard: {
     name:     "Blizzard",
     type:     "ice",
@@ -57,7 +67,7 @@ var attack = {
     stat:     "attack",
     mech:     "attack",
     chance:   0,
-    power:    250,
+    power:    340,
     accuracy: 100,
     explode:  true
   },
@@ -70,6 +80,15 @@ var attack = {
     power:    150,
     accuracy: 100
   },
+  hypnosis: {
+    name:     "Hypnosis",
+    type:     "psychic",
+    mech:     "status",
+    effect:   "SLP",
+    chance:   100,
+    target:   "opponent",
+    accuracy: 60
+  },
   iceBeam: {
     name:     "Ice Beam",
     type:     "ice",
@@ -79,6 +98,24 @@ var attack = {
     effect:   "FRZ",
     chance:   10,
     power:    95,
+    accuracy: 100
+  },
+  megaDrain: {
+    name:     "Mega Drain",
+    type:     "grass",
+    stat:     "special",
+    mech:     "attack",
+    chance:   0,
+    power:    40,
+    accuracy: 100
+  },
+  pinMissile: {
+    name:     "Pin Missle",
+    type:     "bug",
+    stat:     "attack",
+    mech:     "attack",
+    chance:   0,
+    power:    50,
     accuracy: 100
   },
   psychic: {
@@ -116,6 +153,25 @@ var attack = {
     power:    75,
     accuracy: 90
   },
+  selfDestruct: {
+    name:     "Selfdestruct",
+    type:     "normal",
+    stat:     "attack",
+    mech:     "attack",
+    chance:   0,
+    power:    260,
+    accuracy: 100,
+    explode:  true
+  },
+  sing: {
+    name:     "Sing",
+    type:     "normal",
+    mech:     "status",
+    effect:   "SLP",
+    chance:   100,
+    target:   "opponent",
+    accuracy: 55
+  },
   sleepPowder: {
     name:     "Sleep Powder",
     type:     "grass",
@@ -139,6 +195,16 @@ var attack = {
     chance:   100,
     target:   "opponent",
     accuracy: 75
+  },
+  surf: {
+    name: "Surf",
+    type: "water",
+    stat: "special",
+    mech: "attack",
+    mech2: "",
+    chance: 0,
+    power: 95,
+    accuracy: 100
   },
   thunderbolt: {
     name:     "Thunderbolt",
@@ -167,9 +233,13 @@ var typeChart = {
   normal: {
     normal:   1,
     flying:   1,
+    poison:   1,
     ground:   1,
     rock:     .5,
+    bug:      1,
+    ghost:    0,
     grass:    1,
+    water:    1,
     electric: 1,
     psychic:  1,
     ice:      1,
@@ -178,10 +248,29 @@ var typeChart = {
   flying: {
     normal:   1,
     flying:   1,
+    poison:   1,
     ground:   1,
     rock:     .5,
+    bug:      2,
+    ghost:    1,
+    water:    1,
     grass:    2,
     electric: .5,
+    psychic:  1,
+    ice:      1,
+    none:     1
+  },
+  poison: {
+    normal:   1,
+    flying:   1,
+    poison:   .5,
+    ground:   .5,
+    rock:     .5,
+    bug:      1,
+    ghost:    .5,
+    water:    1,
+    grass:    2,
+    electric: 1,
     psychic:  1,
     ice:      1,
     none:     1
@@ -189,8 +278,12 @@ var typeChart = {
   ground: {
     normal:   1,
     flying:   0,
+    poison:   2,
     ground:   1,
     rock:     2,
+    bug:      .5,
+    ghost:    1,
+    water:    1,
     grass:    .5,
     electric: 2,
     psychic:  1,
@@ -200,19 +293,72 @@ var typeChart = {
   rock: {
     normal:   1,
     flying:   2,
+    poison:   1,
     ground:   .5,
     rock:     1,
+    bug:      2,
+    ghost:    1,
+    water:    1,
     grass:    1,
     electric: 1,
     psychic:  1,
     ice:      2,
     none:     1 
   },
+  bug: {
+    normal:   1,
+    flying:   .5,
+    poison:   .5,
+    ground:   1,
+    rock:     1,
+    bug:      1,
+    ghost:    .5,
+    water:    1,
+    grass:    2,
+    electric: 1,
+    psychic:  2,
+    ice:      1,
+    none:     1 
+  },
+  ghost: {
+    normal:   0,
+    flying:   1,
+    poison:   1,
+    ground:   1,
+    rock:     1,
+    bug:      1,
+    ghost:    2,
+    water:    1,
+    grass:    1,
+    electric: 1,
+    psychic:  0,
+    ice:      1,
+    none:     1 
+  },
+  water: {
+    normal:   1,
+    flying:   1,
+    poison:   1,
+    ground:   2,
+    rock:     2,
+    bug:      1,
+    ghost:    1,
+    water:    .5,
+    grass:    .5,
+    electric: 1,
+    psychic:  1,
+    ice:      1,
+    none:     1 
+  },
   grass: {
     normal:   1,
     flying:   .5,
+    poison:   .5,
     ground:   2,
     rock:     2,
+    bug:      .5,
+    ghost:    1,
+    water:    2,
     grass:    .5,
     electric: 1,
     psychic:  1,
@@ -222,8 +368,12 @@ var typeChart = {
   electric: {
     normal:   1,
     flying:   2,
+    poison:   1,
     ground:   0,
     rock:     1,
+    bug:      1,
+    ghost:    1,
+    water:    2,
     grass:    .5,
     electric: .5,
     psychic:  1,
@@ -233,8 +383,12 @@ var typeChart = {
   psychic: {
     normal:   1,
     flying:   1,
+    poison:   1,
     ground:   1,
     rock:     1,
+    bug:      1,
+    ghost:    1,
+    water:    1,
     grass:    1,
     electric: 1,
     psychic:  .5,
@@ -244,8 +398,12 @@ var typeChart = {
   ice: {
     normal:   1,
     flying:   2,
+    poison:   1,
     ground:   2,
     rock:     1,
+    bug:      1,
+    ghost:    1,
+    water:    .5,
     grass:    2,
     electric: 1,
     psychic:  1,
@@ -299,6 +457,28 @@ function Chansey() {
   this.backSprite  = "img/Spr_b_g1_113.png"
 }
 
+function Cloyster() {
+  this.name        = "Cloyster",
+  this.type1       = "water",
+  this.type2       = "ice", 
+  this.health      = 303, 
+  this.maxHealth   = 303,
+  this.attack      = 288, 
+  this.startAtt    = 288, 
+  this.defense     = 458, 
+  this.startDef    = 458, 
+  this.special     = 268, 
+  this.startSpec   = 268, 
+  this.speed       = 238,
+  this.startSpd    = 238,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.surf, attack.blizzard, attack.hyperBeam, attack.explosion],
+  this.frontSprite = "img/Spr_1b_091.png",
+  this.backSprite  = "img/Spr_b_g1_091.png"
+}
+
 function Exeggutor() {
   this.name        = "Exeggutor",
   this.type1       = "grass",
@@ -319,6 +499,96 @@ function Exeggutor() {
   this.moves       = [attack.sleepPowder, attack.stunSpore, attack.psychic, attack.explosion],
   this.frontSprite = "img/Spr_1b_103.png",
   this.backSprite  = "img/Spr_b_g1_103.png"
+}
+
+function Gengar() {
+  this.name        = "Gengar",
+  this.type1       = "ghost",
+  this.type2       = "poison", 
+  this.health      = 323, 
+  this.maxHealth   = 323,
+  this.attack      = 228, 
+  this.startAtt    = 228, 
+  this.defense     = 218, 
+  this.startDef    = 218, 
+  this.special     = 358, 
+  this.startSpec   = 358, 
+  this.speed       = 318,
+  this.startSpd    = 318,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.hypnosis, attack.explosion, attack.thunderbolt, attack.megaDrain],
+  this.frontSprite = "img/Spr_1b_094.png",
+  this.backSprite  = "img/Spr_b_g1_094.png"
+}
+
+function Golem() {
+  this.name        = "Golem",
+  this.type1       = "rock",
+  this.type2       = "ground", 
+  this.health      = 363, 
+  this.maxHealth   = 363,
+  this.attack      = 318, 
+  this.startAtt    = 318, 
+  this.defense     = 358, 
+  this.startDef    = 358, 
+  this.special     = 208, 
+  this.startSpec   = 208, 
+  this.speed       = 188,
+  this.startSpd    = 188,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.bodySlam, attack.earthquake, attack.explosion, attack.rockSlide],
+  this.frontSprite = "img/Spr_1b_076.png",
+  this.backSprite  = "img/Spr_b_g1_076.png"
+  this.hyperBeam   = false;
+};
+
+function Jolteon() {
+  this.name        = "Jolteon",
+  this.type1       = "electric",
+  this.type2       = "none", 
+  this.health      = 333, 
+  this.maxHealth   = 333,
+  this.attack      = 228, 
+  this.startAtt    = 228, 
+  this.defense     = 218, 
+  this.startDef    = 218, 
+  this.special     = 318, 
+  this.startSpec   = 318, 
+  this.speed       = 358,
+  this.startSpd    = 358,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.bodySlam, attack.thunderbolt, attack.thunderWave, attack.pinMissile],
+  this.frontSprite = "img/Spr_1b_135.png",
+  this.backSprite  = "img/Spr_b_g1_135.png"
+  this.hyperBeam   = false;
+}
+
+function Lapras() {
+  this.name        = "Lapras",
+  this.type1       = "water",
+  this.type2       = "ice", 
+  this.health      = 463, 
+  this.maxHealth   = 463,
+  this.attack      = 268, 
+  this.startAtt    = 268, 
+  this.defense     = 258, 
+  this.startDef    = 258, 
+  this.special     = 288, 
+  this.startSpec   = 288, 
+  this.speed       = 218,
+  this.startSpd    = 218,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.blizzard, attack.thunderbolt, attack.bodySlam, attack.sing],
+  this.frontSprite = "img/Spr_1b_131.png",
+  this.backSprite  = "img/Spr_b_g1_131.png"
 }
 
 function Rhydon() {
@@ -342,6 +612,74 @@ function Rhydon() {
   this.frontSprite = "img/Spr_1b_112.png",
   this.backSprite  = "img/Spr_b_g1_112.png"
   this.hyperBeam   = false;
+}
+
+function Slowbro() {
+  this.name        = "Slowbro",
+  this.type1       = "water",
+  this.type2       = "psychic", 
+  this.health      = 393, 
+  this.maxHealth   = 393,
+  this.attack      = 248, 
+  this.startAtt    = 248, 
+  this.defense     = 318, 
+  this.startDef    = 318, 
+  this.special     = 258, 
+  this.startSpec   = 258, 
+  this.speed       = 158,
+  this.startSpd    = 158,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.surf, attack.amnesia, attack.thunderWave, attack.recover],
+  this.frontSprite = "img/Spr_1b_080.png",
+  this.backSprite  = "img/Spr_b_g1_080.png"
+}
+
+function Snorlax() {
+  this.name        = "Snorlax",
+  this.type1       = "normal",
+  this.type2       = "none", 
+  this.health      = 523, 
+  this.maxHealth   = 523,
+  this.attack      = 318,
+  this.startAtt    = 318,
+  this.defense     = 228, 
+  this.startDef    = 228,
+  this.special     = 228, 
+  this.startSpec   = 228,
+  this.speed       = 158,
+  this.startSpd    = 158,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.hyperBeam, attack.bodySlam, attack.selfDestruct, attack.earthquake],
+  this.frontSprite = "img/Spr_1b_143.png",
+  this.backSprite  = "img/Spr_b_g1_143.png",
+  this.hyperBeam   = false
+};
+
+function Starmie() {
+  this.name        = "Starmie",
+  this.type1       = "water",
+  this.type2       = "psychic", 
+  this.health      = 323, 
+  this.maxHealth   = 323,
+  this.attack      = 248,
+  this.startAtt    = 248,
+  this.defense     = 268, 
+  this.startDef    = 268,
+  this.special     = 298, 
+  this.startSpec   = 298,
+  this.speed       = 328,
+  this.startSpd    = 328,
+  this.statStages  = [0,0,0,0],
+  this.status      = "NON",
+  this.turnStat    = 0,
+  this.moves       = [attack.blizzard, attack.thunderbolt, attack.recover, attack.thunderWave],
+  this.frontSprite = "img/Spr_1b_121.png",
+  this.backSprite  = "img/Spr_b_g1_121.png",
+  this.hyperBeam   = false
 };
 
 function Tauros() {
@@ -361,7 +699,7 @@ function Tauros() {
   this.statStages  = [0,0,0,0],
   this.status      = "NON",
   this.turnStat    = 0,
-  this.moves       = [attack.bodySlam, attack.earthquake, attack.blizzard, attack.hyperBeam],
+  this.moves       = [attack.hyperBeam, attack.bodySlam, attack.blizzard, attack.earthquake],
   this.frontSprite = "img/Spr_1b_128.png",
   this.backSprite  = "img/Spr_b_g1_128.png",
   this.hyperBeam   = false
@@ -408,16 +746,16 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
+  playerTeam.push(testP);
   playerTeam.push(zapdosP);
   playerTeam.push(taurosP);
-  playerTeam.push(chanseyP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
   playerTeam.push(exP);
+  opponentTeam.push(testO);
   opponentTeam.push(exO);
   opponentTeam.push(rhydonO);
   opponentTeam.push(taurosO);
-  opponentTeam.push(chanseyO);
   opponentTeam.push(zapdosO);
   opponentTeam.push(zamO);
 };
@@ -574,7 +912,7 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
     return;
   } 
   else {
-    this.eventString += "\nEnemy sent out " + playerTeam[0].name + "!";
+    this.eventString += "Enemy sent out " + playerTeam[0].name + "!\n";
   }
 }
 
@@ -620,7 +958,7 @@ Battle.prototype.checkSpeed = function(player, opponent) {
 Battle.prototype.checkFaint = function(defender, defenderString, whoAttacks, defenderTeam) {
   var defenderFaint = (defender.health <= 0);
   if (defenderFaint === true) {
-    this.eventString += defenderString + defender.name + " has fainted! ";
+    this.eventString += defenderString + defender.name + " has fainted!\n";
     this.deadSwitch(defenderTeam, whoAttacks);
   }
   return defenderFaint;
@@ -629,8 +967,8 @@ Battle.prototype.checkFaint = function(defender, defenderString, whoAttacks, def
 Battle.prototype.explosionFoo = function(attacker, attackString, attackTeam, whoAttacks) {
     this.explode = true;
     attacker.health = 0;
-    this.eventString += attackString + attacker.name + " has fainted! ";
   if (whoAttacks === true) {
+    this.eventString += attackString + attacker.name + " has fainted! ";
     attackTeam.shift();
     this.turnPhase = 4;
   } else {
@@ -821,6 +1159,8 @@ var chanseyP = new Chansey();
 var chanseyO = new Chansey();
 var exP = new Exeggutor();
 var exO = new Exeggutor();
+var testP = new Starmie();
+var testO = new Starmie();
 battle.createTeams(battle.playerTeam, battle.opponentTeam);
 
 battle.eventString += ("Enemy sent out " + battle.opponentTeam[0].name + "!\n");
@@ -978,7 +1318,7 @@ document.onkeypress = function(e) {
         "Red",
         battle.opponentTeam[0].name,
         battle.opponentTeam[0].health,
-        battle.playerTeam[0].status,
+        "NON",
         battle.opponentTeam[0].status,
         battle.opponentTeam[0].maxHealth);
       battle.clearEventString();
