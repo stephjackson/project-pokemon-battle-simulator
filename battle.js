@@ -316,7 +316,7 @@ function Exeggutor() {
   this.statStages  = [0,0,0,0],
   this.status      = "NON",
   this.turnStat    = 0,
-  this.moves       = [attack.sleepPowder, attack.psychic, attack.stunSpore, attack.explosion],
+  this.moves       = [attack.sleepPowder, attack.stunSpore, attack.psychic, attack.explosion],
   this.frontSprite = "img/Spr_1b_103.png",
   this.backSprite  = "img/Spr_b_g1_103.png"
 }
@@ -408,12 +408,12 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
-  playerTeam.push(exP);
   playerTeam.push(zapdosP);
   playerTeam.push(taurosP);
   playerTeam.push(chanseyP);
   playerTeam.push(zamP);
   playerTeam.push(rhydonP);
+  playerTeam.push(exP);
   opponentTeam.push(exO);
   opponentTeam.push(rhydonO);
   opponentTeam.push(taurosO);
@@ -574,7 +574,7 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
     return;
   } 
   else {
-    this.eventString += "Enemy sent out " + playerTeam[0].name + "!\n";
+    this.eventString += "\nEnemy sent out " + playerTeam[0].name + "!";
   }
 }
 
@@ -593,7 +593,10 @@ Battle.prototype.showSwitch = function(playerTeam, startIndex) {
     add = 1;
   }
   for (var i = startIndex; i < playerTeam.length; i++) {
-    string += (i + add) + ": " + playerTeam[i].name + "\n";
+    string += (i + add) + ": " + playerTeam[i].name + " ";
+    if (i === 3) {
+      string += "\n"
+    }
   }
 
   return string;
@@ -624,13 +627,18 @@ Battle.prototype.checkFaint = function(defender, defenderString, whoAttacks, def
 }
 
 Battle.prototype.explosionFoo = function(attacker, attackString, attackTeam, whoAttacks) {
-  console.log(attackTeam);
     this.explode = true;
-    attackTeam.shift();
     attacker.health = 0;
     this.eventString += attackString + attacker.name + " has fainted! ";
   if (whoAttacks === true) {
+    attackTeam.shift();
     this.turnPhase = 4;
+  } else {
+    whoAttacks = !whoAttacks;
+    if (this.pickedMove === 5) {
+      attackTeam = this.playerTeam;
+    }
+    this.deadSwitch(attackTeam, whoAttacks);
   }
   return;
 }
@@ -765,6 +773,7 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
   } else if (attacker.hyperBeam === true) {
     canMove = false;
     attacker.hyperBeam = false;
+    this.eventString = this.eventString.splice(0, this.eventString - 1);
     this.eventString += attackString + attacker.name + " is recharging!\n"
   } else if (this.effectiveness(pickedMove, defender) === 0) {
     canMove = false;
@@ -897,7 +906,7 @@ document.onkeypress = function(e) {
     if (e.key > 0 && e.key < battle.playerTeam.length) {
       battle.switchChoice = e.key;
       this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
-      battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.playerTeam);
+      battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
       battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
       battleCanvas.drawBoard(battle.eventString, 
         battle.playerTeam[0].backSprite, 
