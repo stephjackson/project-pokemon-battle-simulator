@@ -683,7 +683,7 @@ function Snorlax() {
   this.statStages  = [0,0,0,0],
   this.status      = "NON",
   this.turnStat    = 0,
-  this.moves       = [attack.hyperBeam, attack.bodySlam, attack.selfDestruct, attack.earthquake],
+  this.moves       = [attack.hyperBeam, attack.bodySlam, attack.explosion, attack.earthquake],
   this.frontSprite = "img/Spr_1b_143.png",
   this.backSprite  = "img/Spr_b_g1_143.png",
   this.hyperBeam   = false,
@@ -1029,7 +1029,7 @@ Battle.prototype.deadSwitch = function(playerTeam, whoAttacks) {
     return;
   } 
   else {
-    this.eventString += "Enemy sent out " + playerTeam[0].name + "!\n";
+    this.eventString += "\nEnemy sent out " + playerTeam[0].name + "!\n";
   }
 }
 
@@ -1215,7 +1215,7 @@ Battle.prototype.attackRouter = function(attacker, defender, pickedMove, defende
 Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
   var canMove = true;
   if (attacker.status === "PAR") {
-    var roll = Math.floor(Math.random() * 2)
+    var roll = Math.floor(Math.random() * 3)
     if (roll === 0) {
         canMove = false;
         this.eventString += attackString + attacker.name + " is paralyzed!\n";
