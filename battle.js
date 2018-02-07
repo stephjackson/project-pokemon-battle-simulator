@@ -432,7 +432,10 @@ function Alakazam() {
   this.turnStat    = 0,
   this.moves       = [attack.psychic, attack.reflect, attack.recover, attack.thunderWave],
   this.frontSprite = "img/Spr_1b_065.png",
-  this.backSprite  = "img/Spr_b_g1_065.png"
+  this.backSprite  = "img/Spr_b_g1_065.png",
+  this.cry         = new Howl({
+    src: ['sound/alakazamCry.mp3']
+  })
 }
 
 function Chansey() {
@@ -454,7 +457,10 @@ function Chansey() {
   this.turnStat    = 0,
   this.moves       = [attack.iceBeam, attack.softboiled, attack.thunderWave, attack.thunderbolt],
   this.frontSprite = "img/Spr_1b_113.png",
-  this.backSprite  = "img/Spr_b_g1_113.png"
+  this.backSprite  = "img/Spr_b_g1_113.png",
+  this.cry         = new Howl({
+    src: ['sound/chanseyCry.mp3']
+  })
 }
 
 function Cloyster() {
@@ -476,7 +482,10 @@ function Cloyster() {
   this.turnStat    = 0,
   this.moves       = [attack.surf, attack.blizzard, attack.hyperBeam, attack.explosion],
   this.frontSprite = "img/Spr_1b_091.png",
-  this.backSprite  = "img/Spr_b_g1_091.png"
+  this.backSprite  = "img/Spr_b_g1_091.png",
+  this.cry         = new Howl({
+    src: ['sound/cloysterCry.mp3']
+  })
 }
 
 function Exeggutor() {
@@ -498,7 +507,10 @@ function Exeggutor() {
   this.turnStat    = 0,
   this.moves       = [attack.sleepPowder, attack.stunSpore, attack.psychic, attack.explosion],
   this.frontSprite = "img/Spr_1b_103.png",
-  this.backSprite  = "img/Spr_b_g1_103.png"
+  this.backSprite  = "img/Spr_b_g1_103.png",
+  this.cry         = new Howl({
+    src: ['sound/exeggutorCry.mp3']
+  })
 }
 
 function Gengar() {
@@ -520,7 +532,10 @@ function Gengar() {
   this.turnStat    = 0,
   this.moves       = [attack.hypnosis, attack.explosion, attack.thunderbolt, attack.megaDrain],
   this.frontSprite = "img/Spr_1b_094.png",
-  this.backSprite  = "img/Spr_b_g1_094.png"
+  this.backSprite  = "img/Spr_b_g1_094.png",
+  this.cry         = new Howl({
+    src: ['sound/gengarCry.mp3']
+  })
 }
 
 function Golem() {
@@ -543,7 +558,10 @@ function Golem() {
   this.moves       = [attack.bodySlam, attack.earthquake, attack.explosion, attack.rockSlide],
   this.frontSprite = "img/Spr_1b_076.png",
   this.backSprite  = "img/Spr_b_g1_076.png"
-  this.hyperBeam   = false;
+  this.hyperBeam   = false,
+  this.cry         = new Howl({
+    src: ['sound/golemCry.mp3']
+  })
 };
 
 function Jolteon() {
@@ -566,7 +584,10 @@ function Jolteon() {
   this.moves       = [attack.bodySlam, attack.thunderbolt, attack.thunderWave, attack.pinMissile],
   this.frontSprite = "img/Spr_1b_135.png",
   this.backSprite  = "img/Spr_b_g1_135.png"
-  this.hyperBeam   = false;
+  this.hyperBeam   = false,
+  this.cry         = new Howl({
+    src: ['sound/jolteonCry.mp3']
+  })
 }
 
 function Lapras() {
@@ -588,7 +609,10 @@ function Lapras() {
   this.turnStat    = 0,
   this.moves       = [attack.blizzard, attack.thunderbolt, attack.bodySlam, attack.sing],
   this.frontSprite = "img/Spr_1b_131.png",
-  this.backSprite  = "img/Spr_b_g1_131.png"
+  this.backSprite  = "img/Spr_b_g1_131.png",
+  this.cry         = new Howl({
+    src: ['sound/laprasCry.mp3']
+  })
 }
 
 function Rhydon() {
@@ -611,7 +635,10 @@ function Rhydon() {
   this.moves       = [attack.bodySlam, attack.earthquake, attack.hyperBeam, attack.rockSlide],
   this.frontSprite = "img/Spr_1b_112.png",
   this.backSprite  = "img/Spr_b_g1_112.png"
-  this.hyperBeam   = false;
+  this.hyperBeam   = false,
+  this.cry         = new Howl({
+    src: ['sound/rhydonCry.mp3']
+  })
 }
 
 function Slowbro() {
@@ -633,7 +660,10 @@ function Slowbro() {
   this.turnStat    = 0,
   this.moves       = [attack.surf, attack.amnesia, attack.thunderWave, attack.recover],
   this.frontSprite = "img/Spr_1b_080.png",
-  this.backSprite  = "img/Spr_b_g1_080.png"
+  this.backSprite  = "img/Spr_b_g1_080.png",
+  this.cry         = new Howl({
+    src: ['sound/slowbroCry.mp3']
+  })
 }
 
 function Snorlax() {
@@ -656,7 +686,10 @@ function Snorlax() {
   this.moves       = [attack.hyperBeam, attack.bodySlam, attack.selfDestruct, attack.earthquake],
   this.frontSprite = "img/Spr_1b_143.png",
   this.backSprite  = "img/Spr_b_g1_143.png",
-  this.hyperBeam   = false
+  this.hyperBeam   = false,
+  this.cry         = new Howl({
+    src: ['sound/snorlaxCry.mp3']
+  })
 };
 
 function Starmie() {
@@ -679,7 +712,10 @@ function Starmie() {
   this.moves       = [attack.blizzard, attack.thunderbolt, attack.recover, attack.thunderWave],
   this.frontSprite = "img/Spr_1b_121.png",
   this.backSprite  = "img/Spr_b_g1_121.png",
-  this.hyperBeam   = false
+  this.hyperBeam   = false,
+  this.cry         = new Howl({
+    src: ['sound/starmieCry.mp3']
+  })
 };
 
 function Tauros() {
@@ -702,7 +738,10 @@ function Tauros() {
   this.moves       = [attack.hyperBeam, attack.bodySlam, attack.blizzard, attack.earthquake],
   this.frontSprite = "img/Spr_1b_128.png",
   this.backSprite  = "img/Spr_b_g1_128.png",
-  this.hyperBeam   = false
+  this.hyperBeam   = false,
+  this.cry         = new Howl({
+    src: ['sound/taurosCry.mp3']
+  })
 };
 
 function Zapdos() {
@@ -724,9 +763,15 @@ function Zapdos() {
   this.turnStat    = 0,
   this.moves       = [attack.thunderbolt, attack.drillPeck, attack.thunderWave, attack.agility],
   this.frontSprite = "img/Spr_1b_145.png",
-  this.backSprite  = "img/Spr_b_g1_145.png"
+  this.backSprite  = "img/Spr_b_g1_145.png",
+  this.cry         = new Howl({
+    src: ['sound/zapdosCry.mp3']
+  })
 }
 
+var battleMusic = new Howl({
+  src: ['sound/battleMusic.mp3']
+});
 
 //The main battle function constructor.
 function Battle() {
@@ -746,19 +791,55 @@ Battle.prototype.clearEventString = function() {
 
 //Pushes Pokemon to both the player's team array and the opponents.
 Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
-  playerTeam.push(testP);
-  playerTeam.push(zapdosP);
-  playerTeam.push(taurosP);
-  playerTeam.push(zamP);
-  playerTeam.push(rhydonP);
-  playerTeam.push(exP);
-  opponentTeam.push(testO);
-  opponentTeam.push(exO);
-  opponentTeam.push(rhydonO);
-  opponentTeam.push(taurosO);
-  opponentTeam.push(zapdosO);
-  opponentTeam.push(zamO);
+  var alakazam = new Alakazam();
+  var chansey = new Chansey();
+  var cloyster = new Cloyster();
+  var exeggutor = new Exeggutor();
+  var gengar = new Gengar();
+  var golem = new Golem();
+  var jolteon = new Jolteon();
+  var lapras = new Lapras();
+  var rhydon = new Rhydon();
+  var slowbro = new Slowbro();
+  var snorlax = new Snorlax();
+  var starmie = new Starmie();
+  var tauros = new Tauros();
+  var zapdos = new Zapdos();
+
+  var pickArray = [];
+  pickArray.push(alakazam);
+  pickArray.push(chansey);
+  pickArray.push(cloyster);
+  pickArray.push(exeggutor);
+  pickArray.push(gengar);
+  pickArray.push(golem);
+  pickArray.push(jolteon);
+  pickArray.push(lapras);
+  pickArray.push(rhydon);
+  pickArray.push(slowbro);
+  pickArray.push(snorlax);
+  pickArray.push(starmie);
+  pickArray.push(tauros);
+  pickArray.push(zapdos);
+
+  pickArray = battle.shuffle(pickArray);
+
+  for (var i = 0; i < 12; i+=2) {
+    this.playerTeam.push(pickArray[i]);
+    this.opponentTeam.push(pickArray[i + 1])
+  }
 };
+
+Battle.prototype.shuffle = function(array) {
+  var temp = null;
+  for (var i = array.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
 
 //Calculates the damage of a Pokemon using a move on an opponent.
 Battle.prototype.calculateDamage = function(attacker, move, opponent, crit) {
@@ -1145,23 +1226,11 @@ Battle.prototype.winnerCheck = function(defenderTeam) {
 }
 
 //Status update
-var battleCanvas = new BattleCanvas();
 var battle = new Battle();
-var zapdosP = new Zapdos();
-var zapdosO = new Zapdos();
-var taurosP = new Tauros();
-var rhydonP = new Rhydon();
-var taurosO = new Tauros();
-var rhydonO = new Rhydon();
-var zamP = new Alakazam();
-var zamO = new Alakazam();
-var chanseyP = new Chansey();
-var chanseyO = new Chansey();
-var exP = new Exeggutor();
-var exO = new Exeggutor();
-var testP = new Starmie();
-var testO = new Starmie();
+var battleCanvas = new BattleCanvas();
+
 battle.createTeams(battle.playerTeam, battle.opponentTeam);
+battleMusic.play();
 
 battle.eventString += ("Enemy sent out " + battle.opponentTeam[0].name + "!\n");
 battle.eventString += ("Go! " + battle.playerTeam[0].name + "!");
@@ -1177,6 +1246,7 @@ battleCanvas.drawBoard(battle.eventString,
   battle.playerTeam[0].status,
   battle.opponentTeam[0].status,
   battle.opponentTeam[0].maxHealth);
+battle.playerTeam[0].cry.play();
 battle.clearEventString();
 
 document.onkeypress = function(e) {
@@ -1259,6 +1329,7 @@ document.onkeypress = function(e) {
         battle.playerTeam[0].status,
         battle.opponentTeam[0].status,
         battle.opponentTeam[0].maxHealth);
+      battle.playerTeam[0].cry.play();
       battle.clearEventString();
       battle.turnPhase = 0;
     } else {
@@ -1280,6 +1351,7 @@ document.onkeypress = function(e) {
         battle.playerTeam[0].status,
         battle.opponentTeam[0].status,
         battle.opponentTeam[0].maxHealth);
+      battle.playerTeam[0].cry.play();
       battle.clearEventString();
       battle.turnPhase = 0;
     }
