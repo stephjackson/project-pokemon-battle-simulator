@@ -1166,7 +1166,7 @@ window.onload = function() {
   }
 
   Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
-    if (defender.status !== "NON" && pickedMove.chance === 100) {
+    if (defender.status !== "NON" && pickedMove.chance > 0) {
       this.eventString += "It failed!\n";
     } else {
       var chanceBool = true;
