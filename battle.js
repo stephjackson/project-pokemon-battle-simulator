@@ -1104,7 +1104,7 @@ Battle.prototype.attack = function(attacker, defender, pickedMove, defenderTeam,
   var attackDamage = battle.calculateDamage(attacker, pickedMove, defender, crit, whoAttacks);
   defender.health -= attackDamage;
   if (attackDamage > 0) {
-    this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n";
+    this.eventString += attackString + attacker.name + " dealt " + attackDamage + " damage to " + defender.name + "!\n  ";
     if (pickedMove.mech2 = "status") {
       var filler = this.status(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString)
     }
