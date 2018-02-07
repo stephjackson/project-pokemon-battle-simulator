@@ -773,7 +773,7 @@ Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defender
   } else if (attacker.hyperBeam === true) {
     canMove = false;
     attacker.hyperBeam = false;
-    this.eventString = this.eventString.splice(0, this.eventString - 1);
+    this.eventString = this.eventString.slice(0, this.eventString - 1);
     this.eventString += attackString + attacker.name + " is recharging!\n"
   } else if (this.effectiveness(pickedMove, defender) === 0) {
     canMove = false;
@@ -973,9 +973,9 @@ document.onkeypress = function(e) {
       battleCanvas.drawBoard(battle.eventString, 
         "img/RGB_Red_Back.png", 
         battle.opponentTeam[0].frontSprite, 
-        battle.playerTeam[0].health, 
-        battle.playerTeam[0].maxHealth, 
-        battle.playerTeam[0].name,
+        battle.playerTeam.length, 
+        "6", 
+        "Red",
         battle.opponentTeam[0].name,
         battle.opponentTeam[0].health,
         battle.playerTeam[0].status,
@@ -984,7 +984,7 @@ document.onkeypress = function(e) {
       battle.clearEventString();
       battle.turnPhase = "dead";
     }
-  battle.epxlode = false;
+  battle.explode = false;
   }
 }
 
