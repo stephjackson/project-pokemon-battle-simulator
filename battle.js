@@ -1075,7 +1075,7 @@ Battle.prototype.checkSpeed = function(player, opponent) {
 Battle.prototype.checkFaint = function(defender, defenderString, whoAttacks, defenderTeam) {
   var defenderFaint = (defender.health <= 0);
   if (defenderFaint === true) {
-    this.eventString += defenderString + defender.name + " has fainted!\n";
+    this.eventString += defenderString + defender.name + " has fainted!";
     this.deadSwitch(defenderTeam, whoAttacks);
   }
   return defenderFaint;

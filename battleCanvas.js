@@ -25,11 +25,11 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     that.ctx.font = "19px PokemonGB";
     that.ctx.fillText(curHealth, 395, 348);
     that.ctx.fillText(maxHealth, 475, 348);
-    if (oppStatus !== "NON") {
+    if (oppStatus !== "NON" && oppStatus !== undefined) {
       that.ctx.fillText(oppStatus, 292, 56);
     }
     that.ctx.fillText(myName, 324, 284);
-    if (myStatus !== "NON") {
+    if (myStatus !== "NON" && oppStatus !== undefined) {
       that.ctx.fillText(myStatus, 524, 284);
     }
     that.ctx.fillText(oppName, 44, 56);
