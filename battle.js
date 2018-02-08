@@ -718,7 +718,7 @@ window.onload = function() {
     this.maxHealth   = 523,
     this.attack      = 318,
     this.startAtt    = 318,
-    this.defense     = 228, 
+    this.defense     = 228,
     this.startDef    = 228,
     this.special     = 228, 
     this.startSpec   = 228,
@@ -1053,6 +1053,7 @@ window.onload = function() {
       return;
     }
     if (whoAttacks === false) {
+      console.log("hi");
       faint.play();
       this.turnPhase = 4;
       return;
@@ -1182,7 +1183,9 @@ window.onload = function() {
 
   Battle.prototype.status = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
     if (defender.status !== "NON" && pickedMove.chance > 0) {
-      this.eventString += "It failed!\n";
+      if (pickedMove.chance === 100) {
+        this.eventString += "It failed!\n"; 
+      }
     } else {
       var chanceBool = true;
       var chance = Math.floor(Math.random() * 100 - pickedMove.chance);
@@ -1267,7 +1270,7 @@ window.onload = function() {
       attacker.hyperBeam = false;
       this.eventString = this.eventString.slice(0, this.eventString - 1);
       this.eventString += attackString + attacker.name + " is recharging!\n"
-    } else if (this.effectiveness(pickedMove, defender) === 0) {
+    } else if (this.effectiveness(pickedMove, defender) === 0 && this.pickedMove.mech === "attack") {
       canMove = false;
       this.eventString += defenderString + defender.name + " is immune to " + pickedMove.name + "!\n";
     } else {
@@ -1428,23 +1431,25 @@ window.onload = function() {
       if (e.key > 0 && e.key < battle.playerTeam.length) {
         battle.switchChoice = e.key;
         this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
-        battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
-        battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
-        battle.stringCleanup();
-        battleCanvas.drawBoard(battle.eventString, 
-          battle.playerTeam[0].backSprite, 
-          battle.opponentTeam[0].frontSprite, 
-          battle.playerTeam[0].health, 
-          battle.playerTeam[0].maxHealth, 
-          battle.playerTeam[0].name,
-          battle.opponentTeam[0].name,
-          battle.opponentTeam[0].health,
-          battle.playerTeam[0].status,
-          battle.opponentTeam[0].status,
-          battle.opponentTeam[0].maxHealth);
-        battle.playerTeam[0].cry.play();
-        battle.clearEventString();
-        battle.turnPhase = 0;
+        var died = battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
+        if (died === false) {
+          battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+          battle.stringCleanup();
+          battleCanvas.drawBoard(battle.eventString, 
+            battle.playerTeam[0].backSprite, 
+            battle.opponentTeam[0].frontSprite, 
+            battle.playerTeam[0].health, 
+            battle.playerTeam[0].maxHealth, 
+            battle.playerTeam[0].name,
+            battle.opponentTeam[0].name,
+            battle.opponentTeam[0].health,
+            battle.playerTeam[0].status,
+            battle.opponentTeam[0].status,
+            battle.opponentTeam[0].maxHealth);
+          battle.playerTeam[0].cry.play();
+          battle.clearEventString();
+          battle.turnPhase = 0;
+        }
       } else if (e.key == 6) {
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
         battle.stringCleanup();
