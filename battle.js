@@ -1070,6 +1070,8 @@ window.onload = function() {
       }
     }
 
+    string += "6: Cancel\n";
+
     return string;
   }
 
@@ -1329,9 +1331,6 @@ window.onload = function() {
             battle.opponentTeam[0].maxHealth);
           battle.clearEventString();
         }
-      } else if (e.key > 0 && e.key < 5) {
-        battle.pickedMove = e.key;
-        battle.turnPhase++;
       } else {
         console.log("Something went wrong!");
       }
@@ -1371,6 +1370,7 @@ window.onload = function() {
         battle.turnPhase = 0;
       }
     } else if (battle.turnPhase === 2 && battle.gameOver === false) {
+      console.log(e.key);
       if (e.key > 0 && e.key < battle.playerTeam.length) {
         battle.switchChoice = e.key;
         this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
@@ -1388,6 +1388,22 @@ window.onload = function() {
           battle.opponentTeam[0].status,
           battle.opponentTeam[0].maxHealth);
         battle.playerTeam[0].cry.play();
+        battle.clearEventString();
+        battle.turnPhase = 0;
+      } else if (e.key == 6) {
+        console.log("test");
+        battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+        battleCanvas.drawBoard(battle.eventString, 
+          battle.playerTeam[0].backSprite, 
+          battle.opponentTeam[0].frontSprite, 
+          battle.playerTeam[0].health, 
+          battle.playerTeam[0].maxHealth, 
+          battle.playerTeam[0].name,
+          battle.opponentTeam[0].name,
+          battle.opponentTeam[0].health,
+          battle.playerTeam[0].status,
+          battle.opponentTeam[0].status,
+          battle.opponentTeam[0].maxHealth);
         battle.clearEventString();
         battle.turnPhase = 0;
       } else {
