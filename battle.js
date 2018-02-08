@@ -1333,7 +1333,9 @@ window.onload = function() {
   battle.clearEventString();
 
   document.onkeypress = function(e) {
-    var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
+    if (battle.opponentTeam.length > 0) {
+      var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
+    }
     if (battle.turnPhase === 0 && battle.gameOver === false) {
       if (e.key == 1 || e.key == 2) {
         battle.pickedMove = e.key;
@@ -1510,6 +1512,8 @@ window.onload = function() {
         battle.clearEventString();
         battle.turnPhase = 0;
       }
+    } else if (battle.turnPhase === 10) {``
+      location.reload();
     }
     if (battle.turnPhase === 3) {
       if (battle.playerTeam.length === 0) {
@@ -1519,6 +1523,7 @@ window.onload = function() {
       } else {
         console.log("Something bad happened!");
       }
+        battle.eventString += "\nPress a key to play again!";
         battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           "img/RGB_Red_Back.png", 
