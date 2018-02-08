@@ -969,6 +969,14 @@ window.onload = function() {
 
   Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
     var string = "\nChoose a move: "
+    string += "1: Attack\n2: Switch";
+
+    return string;
+  }
+
+  Battle.prototype.showAttacks = function(currentPokemon, currentTeam) {
+    var string = "";
+    
     currentPokemon.moves.forEach(function(move, i){
       string += (i + 1) + ": " + move.name + " ";
       if (i === 1) {
@@ -976,7 +984,7 @@ window.onload = function() {
       }
     });
 
-    string += "5: Switch";
+    string += "\n5: Cancel";
 
     return string;
   }
@@ -1312,10 +1320,25 @@ window.onload = function() {
   document.onkeypress = function(e) {
     var opponentsMove = battle.opponentMove(battle.opponentTeam[0]);
     if (battle.turnPhase === 0 && battle.gameOver === false) {
-      if (e.key > 0 && e.key < 6 && battle.playerTeam.length > 1) {
+      if (e.key == 1 || e.key == 2) {
         battle.pickedMove = e.key;
         battle.turnPhase++;
-        if (battle.pickedMove == 5) {
+        if (battle.pickedMove == 1) {
+          battle.eventString += battle.showAttacks(battle.playerTeam[0], battle.playerTeam);
+          battleCanvas.drawBoard(battle.eventString, 
+            battle.playerTeam[0].backSprite, 
+            battle.opponentTeam[0].frontSprite, 
+            battle.playerTeam[0].health, 
+            battle.playerTeam[0].maxHealth, 
+            battle.playerTeam[0].name,
+            battle.opponentTeam[0].name,
+            battle.opponentTeam[0].health,
+            battle.playerTeam[0].status,
+            battle.opponentTeam[0].status,
+            battle.opponentTeam[0].maxHealth);
+          battle.clearEventString();
+        }
+        if (battle.pickedMove == 2) {
           battle.turnPhase++;
           battle.eventString += battle.showSwitch(battle.playerTeam, 1);
           battleCanvas.drawBoard(battle.eventString, 
@@ -1337,23 +1360,7 @@ window.onload = function() {
     } else if (battle.turnPhase === 1 && battle.gameOver === false) {
       //Opponent picks move
       //Check speed
-      battle.pickedMove = battle.playerTeam[0].moves[battle.pickedMove - 1];
-      var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
-      var died = false;
-      //Faster goes first
-      if (playerGoesFirst === true && battle.pickedMove != 5) {
-        died = battle.attackRouter(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true, battle.playerTeam);
-        if (battle.opponentTeam.length > 0 && died === false && battle.opponentTeam[0].health > 0 && battle.explode === false) {
-          battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
-        }
-      } else {
-        died = battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
-        if (battle.playerTeam.length > 0 && battle.pickedMove != 5 && died === false && battle.playerTeam[0].health > 0 && battle.explode === false) {
-          battle.attackRouter(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true, battle.playerTeam);
-        }
-      } if (battle.gameOver === false && battle.turnPhase != 4) {
-        //Pick move
-        battle.eventString = battle.eventString.substring(0, battle.eventString.length - 1);
+      if (e.key == 5) {
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
         battleCanvas.drawBoard(battle.eventString, 
           battle.playerTeam[0].backSprite, 
@@ -1368,6 +1375,43 @@ window.onload = function() {
           battle.opponentTeam[0].maxHealth);
         battle.clearEventString();
         battle.turnPhase = 0;
+      } else if (e.key == 1 || e.key == 2 || e.key == 3 || e.key == 4) {
+        battle.pickedMove = e.key;
+        console.log(battle.pickedMove);
+        if (battle.pickedMove > 0 && battle.pickedMove < 5) {
+          battle.pickedMove = battle.playerTeam[0].moves[battle.pickedMove - 1];
+          var playerGoesFirst = battle.checkSpeed(battle.playerTeam[0], battle.opponentTeam[0]);
+          var died = false;
+          //Faster goes first
+          if (playerGoesFirst === true && battle.pickedMove != 5) {
+            died = battle.attackRouter(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true, battle.playerTeam);
+            if (battle.opponentTeam.length > 0 && died === false && battle.opponentTeam[0].health > 0 && battle.explode === false) {
+              battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
+            }
+          } else {
+            died = battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
+            if (battle.playerTeam.length > 0 && battle.pickedMove != 5 && died === false && battle.playerTeam[0].health > 0 && battle.explode === false) {
+              battle.attackRouter(battle.playerTeam[0], battle.opponentTeam[0], battle.pickedMove, battle.opponentTeam, true, battle.playerTeam);
+            }
+          } if (battle.gameOver === false && battle.turnPhase != 4) {
+            //Pick move
+            battle.eventString = battle.eventString.substring(0, battle.eventString.length - 1);
+            battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+            battleCanvas.drawBoard(battle.eventString, 
+              battle.playerTeam[0].backSprite, 
+              battle.opponentTeam[0].frontSprite, 
+              battle.playerTeam[0].health, 
+              battle.playerTeam[0].maxHealth, 
+              battle.playerTeam[0].name,
+              battle.opponentTeam[0].name,
+              battle.opponentTeam[0].health,
+              battle.playerTeam[0].status,
+              battle.opponentTeam[0].status,
+              battle.opponentTeam[0].maxHealth);
+            battle.clearEventString();
+            battle.turnPhase = 0;
+          }
+        }
       }
     } else if (battle.turnPhase === 2 && battle.gameOver === false) {
       console.log(e.key);
@@ -1391,7 +1435,6 @@ window.onload = function() {
         battle.clearEventString();
         battle.turnPhase = 0;
       } else if (e.key == 6) {
-        console.log("test");
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
         battleCanvas.drawBoard(battle.eventString, 
           battle.playerTeam[0].backSprite, 
