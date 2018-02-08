@@ -829,6 +829,11 @@ window.onload = function() {
     this.eventString = "";
   }
 
+  Battle.prototype.stringCleanup = function() {
+    this.eventString = this.eventString.replace(/^\s+|\s+$/g, '');
+    this.eventString = this.eventString.replace(/\n\n/g, "\n");
+  }
+
   //Pushes Pokemon to both the player's team array and the opponents.
   Battle.prototype.createTeams = function(playerTeam, opponentTeam) {
     var alakazam = new Alakazam();
@@ -969,7 +974,7 @@ window.onload = function() {
 
   Battle.prototype.showMoves = function(currentPokemon, currentTeam) {
     var string = "\nChoose a move: "
-    string += "1: Attack\n2: Switch";
+    string += "1: Attack 2: Switch";
 
     return string;
   }
@@ -1241,7 +1246,7 @@ window.onload = function() {
   Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
     var canMove = true;
     if (attacker.status === "PAR") {
-      var roll = Math.floor(Math.random() * 3)
+      var roll = Math.floor(Math.random() * 4)
       if (roll === 0) {
           canMove = false;
           this.eventString += attackString + attacker.name + " is paralyzed!\n";
@@ -1303,6 +1308,7 @@ window.onload = function() {
   battle.eventString += ("Enemy sent out " + battle.opponentTeam[0].name + "!\n");
   battle.eventString += ("Go! " + battle.playerTeam[0].name + "!");
   battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+  battle.stringCleanup();
   battleCanvas.drawBoard(battle.eventString, 
     battle.playerTeam[0].backSprite, 
     battle.opponentTeam[0].frontSprite, 
@@ -1325,6 +1331,7 @@ window.onload = function() {
         battle.turnPhase++;
         if (battle.pickedMove == 1) {
           battle.eventString += battle.showAttacks(battle.playerTeam[0], battle.playerTeam);
+          battle.stringCleanup();
           battleCanvas.drawBoard(battle.eventString, 
             battle.playerTeam[0].backSprite, 
             battle.opponentTeam[0].frontSprite, 
@@ -1341,6 +1348,7 @@ window.onload = function() {
         if (battle.pickedMove == 2) {
           battle.turnPhase++;
           battle.eventString += battle.showSwitch(battle.playerTeam, 1);
+          battle.stringCleanup();
           battleCanvas.drawBoard(battle.eventString, 
             battle.playerTeam[0].backSprite, 
             battle.opponentTeam[0].frontSprite, 
@@ -1362,6 +1370,7 @@ window.onload = function() {
       //Check speed
       if (e.key == 5) {
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+        battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           battle.playerTeam[0].backSprite, 
           battle.opponentTeam[0].frontSprite, 
@@ -1397,6 +1406,7 @@ window.onload = function() {
             //Pick move
             battle.eventString = battle.eventString.substring(0, battle.eventString.length - 1);
             battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+            battle.stringCleanup();
             battleCanvas.drawBoard(battle.eventString, 
               battle.playerTeam[0].backSprite, 
               battle.opponentTeam[0].frontSprite, 
@@ -1420,6 +1430,7 @@ window.onload = function() {
         this.eventString += battle.switch(battle.playerTeam, battle.switchChoice);
         battle.attackRouter(battle.opponentTeam[0], battle.playerTeam[0], opponentsMove, battle.playerTeam, false, battle.opponentTeam);
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+        battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           battle.playerTeam[0].backSprite, 
           battle.opponentTeam[0].frontSprite, 
@@ -1436,6 +1447,7 @@ window.onload = function() {
         battle.turnPhase = 0;
       } else if (e.key == 6) {
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+        battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           battle.playerTeam[0].backSprite, 
           battle.opponentTeam[0].frontSprite, 
@@ -1457,6 +1469,7 @@ window.onload = function() {
         battle.switchChoice = e.key - 1;
         battle.eventString += battle.switchOnFaint(battle.playerTeam, battle.switchChoice);
         battle.eventString += battle.showMoves(battle.playerTeam[0], battle.playerTeam);
+        battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           battle.playerTeam[0].backSprite, 
           battle.opponentTeam[0].frontSprite, 
@@ -1481,6 +1494,7 @@ window.onload = function() {
       } else {
         console.log("Something bad happened!");
       }
+        battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           "img/RGB_Red_Back.png", 
           "img/Spr_RG_Blue_3.png", 
@@ -1501,6 +1515,7 @@ window.onload = function() {
       if (battle.turnPhase === 4) {
         battle.eventString += "\nWho would you like to send out?\n";
         battle.eventString += battle.showSwitch(battle.playerTeam, 0);
+        battle.stringCleanup();
         battleCanvas.drawBoard(battle.eventString, 
           "img/RGB_Red_Back.png", 
           battle.opponentTeam[0].frontSprite, 
