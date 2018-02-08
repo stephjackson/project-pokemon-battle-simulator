@@ -1322,7 +1322,9 @@ window.onload = function() {
     battle.opponentTeam[0].health,
     battle.playerTeam[0].status,
     battle.opponentTeam[0].status,
-    battle.opponentTeam[0].maxHealth);
+    battle.opponentTeam[0].maxHealth,
+    battle.playerTeam.length,
+    battle.opponentTeam.length);
   battle.playerTeam[0].cry.play();
   battle.clearEventString();
 
@@ -1345,7 +1347,9 @@ window.onload = function() {
             battle.opponentTeam[0].health,
             battle.playerTeam[0].status,
             battle.opponentTeam[0].status,
-            battle.opponentTeam[0].maxHealth);
+            battle.opponentTeam[0].maxHealth,
+            battle.playerTeam.length,
+            battle.opponentTeam.length);
           battle.clearEventString();
         }
         if (battle.pickedMove == 2) {
@@ -1362,7 +1366,9 @@ window.onload = function() {
             battle.opponentTeam[0].health,
             battle.playerTeam[0].status,
             battle.opponentTeam[0].status,
-            battle.opponentTeam[0].maxHealth);
+            battle.opponentTeam[0].maxHealth,
+            battle.playerTeam.length,
+            battle.opponentTeam.length);
           battle.clearEventString();
         }
       } else {
@@ -1384,7 +1390,9 @@ window.onload = function() {
           battle.opponentTeam[0].health,
           battle.playerTeam[0].status,
           battle.opponentTeam[0].status,
-          battle.opponentTeam[0].maxHealth);
+          battle.opponentTeam[0].maxHealth,
+          battle.playerTeam.length,
+          battle.opponentTeam.length);
         battle.clearEventString();
         battle.turnPhase = 0;
       } else if (e.key == 1 || e.key == 2 || e.key == 3 || e.key == 4) {
@@ -1420,7 +1428,9 @@ window.onload = function() {
               battle.opponentTeam[0].health,
               battle.playerTeam[0].status,
               battle.opponentTeam[0].status,
-              battle.opponentTeam[0].maxHealth);
+              battle.opponentTeam[0].maxHealth,
+              battle.playerTeam.length,
+              battle.opponentTeam.length);
             battle.clearEventString();
             battle.turnPhase = 0;
           }
@@ -1445,7 +1455,9 @@ window.onload = function() {
             battle.opponentTeam[0].health,
             battle.playerTeam[0].status,
             battle.opponentTeam[0].status,
-            battle.opponentTeam[0].maxHealth);
+            battle.opponentTeam[0].maxHealth,
+            battle.playerTeam.length,
+            battle.opponentTeam.length);
           battle.playerTeam[0].cry.play();
           battle.clearEventString();
           battle.turnPhase = 0;
@@ -1463,7 +1475,9 @@ window.onload = function() {
           battle.opponentTeam[0].health,
           battle.playerTeam[0].status,
           battle.opponentTeam[0].status,
-          battle.opponentTeam[0].maxHealth);
+          battle.opponentTeam[0].maxHealth,
+          battle.playerTeam.length,
+          battle.opponentTeam.length);
         battle.clearEventString();
         battle.turnPhase = 0;
       } else {
@@ -1485,7 +1499,9 @@ window.onload = function() {
           battle.opponentTeam[0].health,
           battle.playerTeam[0].status,
           battle.opponentTeam[0].status,
-          battle.opponentTeam[0].maxHealth);
+          battle.opponentTeam[0].maxHealth,
+          battle.playerTeam.length,
+          battle.opponentTeam.length);
         battle.playerTeam[0].cry.play();
         battle.clearEventString();
         battle.turnPhase = 0;
@@ -1503,15 +1519,16 @@ window.onload = function() {
         battleCanvas.drawBoard(battle.eventString, 
           "img/RGB_Red_Back.png", 
           "img/Spr_RG_Blue_3.png", 
-          0, 
-          0, 
+          "", 
+          "", 
           "Red",
           "Blue",
           0,
           "",
           "",
           0,
-          0);
+          battle.playerTeam.length,
+          battle.opponentTeam.length,);
         battleMusic.stop();
         victory.play();
         battle.clearEventString();
@@ -1524,14 +1541,16 @@ window.onload = function() {
         battleCanvas.drawBoard(battle.eventString, 
           "img/RGB_Red_Back.png", 
           battle.opponentTeam[0].frontSprite, 
-          battle.playerTeam.length, 
-          "6", 
+          "", 
+          "", 
           "Red",
           battle.opponentTeam[0].name,
           battle.opponentTeam[0].health,
           "NON",
           battle.opponentTeam[0].status,
-          battle.opponentTeam[0].maxHealth);
+          battle.opponentTeam[0].maxHealth,
+          battle.playerTeam.length,
+          battle.opponentTeam.length);
         battle.clearEventString();
         battle.turnPhase = "dead";
       }

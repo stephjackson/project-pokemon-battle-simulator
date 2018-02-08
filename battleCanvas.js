@@ -13,13 +13,15 @@ BattleCanvas.prototype.titleScreen = function() {
   });
 }
 
-BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealth, maxHealth, myName, oppName, oppHealth, myStatus, oppStatus, oppMaxHealth) {
+BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealth, maxHealth, myName, oppName, oppHealth, myStatus, oppStatus, oppMaxHealth, myTeamLength, oppTeamLength) {
   var background = new Image();
   var player = new Image();
   var opponent = new Image();
+  var ball = new Image();
   var x = 30, y = 426;
   this.ctx.font = "12px PokemonGB";
   background.src = "img/battlefield.png";
+  ball.src = "img/pokeball.png";
   this.ctx.fillStyle = "#000000";
   player.src = pokemon1;
   opponent.src = pokemon2;
@@ -48,6 +50,15 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     })
     opponent.addEventListener("load", function() {
       which.ctx.drawImage(opponent, 417, 0, 224, 224);
+    })
+    console.log(oppTeamLength, myTeamLength)
+    ball.addEventListener("load", function() {
+      for (var i = 0; i < oppTeamLength; i++) {
+        which.ctx.drawImage(ball, 124 + (i * 28), 100, 24, 24)
+      }
+      for (var i = 0; i < myTeamLength; i++) {
+        which.ctx.drawImage(ball, 392 + (i * 28), 356, 24, 24)
+      }
     })
     that.ctx.fillStyle = "#848484";
     var myHealthLength = (192 * curHealth / maxHealth);
