@@ -45,12 +45,12 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     }
     that.ctx.fillText(oppName, 44, 56);
     which = that;
-    player.addEventListener("load", function() {
+    player.onload = function() {
       which.ctx.drawImage(player, 20, 168, 224, 224);
-    })
-    opponent.addEventListener("load", function() {
+    };
+    opponent.onload = function() {
       which.ctx.drawImage(opponent, 417, 0, 224, 224);
-    })
+    };
     console.log(oppTeamLength, myTeamLength)
     ball.addEventListener("load", function() {
       for (var i = 0; i < oppTeamLength; i++) {

@@ -5,6 +5,10 @@ window.onload = function() {
     loop: true
   });
 
+  var lostBattle = new Howl({
+    src: ['sound/lostBattle.mp3']
+  });
+
   var titleMusic = new Howl({
     src: ['sound/titleScreenMusic.mp3'],
     loop: true
@@ -1530,7 +1534,11 @@ window.onload = function() {
           battle.playerTeam.length,
           battle.opponentTeam.length,);
         battleMusic.stop();
-        victory.play();
+        if(battle.opponentTeam.length === 0) {
+          victory.play();
+        } else {
+          lostBattle.play();
+        }
         battle.clearEventString();
         battle.turnPhase = 10;
       }
