@@ -18,7 +18,7 @@ Pokemon is a series of turn-based RPGs where characters explore the world of Pok
 [![Switching!](https://i.imgur.com/ur90skQ.png?1)](https://stephjackson.github.io/project-pokemon-battle-simulator/)
 
 -When all of a fighter's Pokemon faint, the game is over! 
-[![Switching!](https://i.imgur.com/GMzGplM.png?1)](https://stephjackson.github.io/project-pokemon-battle-simulator/)
+[![End of fight!](https://i.imgur.com/GMzGplM.png?1)](https://stephjackson.github.io/project-pokemon-battle-simulator/)
 
 # Technologies Used
 #### -Javascript
