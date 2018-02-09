@@ -1,5 +1,9 @@
 
 window.onload = function() {
+  if (! localStorage.justOnce) {
+    localStorage.setItem("justOnce", "true");
+    window.location.reload();
+  }
   var battleMusic = new Howl({
     src: ['sound/battleMusic.mp3'],
     loop: true
