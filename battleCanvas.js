@@ -45,12 +45,6 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     }
     that.ctx.fillText(oppName, 44, 56);
     which = that;
-    player.onload = function() {
-      which.ctx.drawImage(player, 20, 168, 224, 224);
-    };
-    opponent.onload = function() {
-      which.ctx.drawImage(opponent, 417, 0, 224, 224);
-    };
     console.log(oppTeamLength, myTeamLength)
     ball.addEventListener("load", function() {
       for (var i = 0; i < oppTeamLength; i++) {
@@ -65,5 +59,11 @@ BattleCanvas.prototype.drawBoard = function(string, pokemon1, pokemon2, curHealt
     var oppHealthLength = (192 * oppHealth / oppMaxHealth);
     that.ctx.fillRect(128,76,oppHealthLength,8)
     that.ctx.fillRect(384,300,myHealthLength,8)
+    player.onload = function() {
+      which.ctx.drawImage(player, 20, 168, 224, 224);
+    };
+    opponent.onload = function() {
+      which.ctx.drawImage(opponent, 417, 0, 224, 224);
+    };
   });
 }
