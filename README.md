@@ -10,7 +10,6 @@ Pokemon is a series of turn-based RPGs where characters explore the world of Pok
 
 # How does a Pokemon battle work?
 -Players take turns selecting either attack, which allows them to pick from four attacks, or switch, which allows them to switch to another Pokemon. You can select menu options by using the numbered keyboard keys.
-[![A Pokemon battle!](https://i.imgur.com/uvUI2nt.png?1)](https://stephjackson.github.io/project-pokemon-battle-simulator/)
 
 -Attacks can either deal damage, buff a Pokemon's stats (such as speed or defense), or inflict a status such as paralysis.
 [![Attacks!](https://i.imgur.com/ypfu4s2.png?1)](https://stephjackson.github.io/project-pokemon-battle-simulator/)
