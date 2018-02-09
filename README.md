@@ -1,5 +1,6 @@
 # Pokemon Battle Simulator
 
+[Play it here!](https://www.stephjackson.github.io/project-pokemon-battle-simulator)
 [![Title Screen](https://i.imgur.com/gEtH7OS.png?1)](https://stephjackson.github.io/project-pokemon-battle-simulator/)
 
 Pokemon Battle Simulator is an emulation of Pokemon battles from the first generation of Game Boy games.
