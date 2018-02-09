@@ -56,6 +56,7 @@ window.onload = function() {
       statName: "speed",
       origStat: "startSpd",
       mech:     "stat",
+      target:   "self",
       stage:    2,
       accuracy: 100,
     },
@@ -66,6 +67,7 @@ window.onload = function() {
       statName: "special",
       origStat: "startSpec",
       mech:     "stat",
+      target:   "self",
       stage:    2,
       accuracy: 100,
     },
@@ -76,7 +78,8 @@ window.onload = function() {
       mech:     "attack",
       mech2:    "status",
       effect:   "FRZ",
-      chance:   10,
+      target:   "opponent",
+      chance:   0,
       power:    120,
       accuracy: 90
     },
@@ -87,6 +90,7 @@ window.onload = function() {
       mech:     "attack",
       mech2:    "status",
       effect:   "PAR",
+      target:   "opponent",
       chance:   30,
       power:    85,
       accuracy: 100
@@ -96,6 +100,7 @@ window.onload = function() {
       type:     "flying",
       stat:     "attack",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    80,
       accuracy: 100
@@ -105,6 +110,7 @@ window.onload = function() {
       type:     "ground",
       stat:     "attack",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    100,
       accuracy: 100
@@ -114,16 +120,28 @@ window.onload = function() {
       type:     "normal",
       stat:     "attack",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    340,
       accuracy: 100,
       explode:  true
+    },
+    fireBlast: {
+      name:     "Fire Blast",
+      type:     "fire",
+      stat:     "special",
+      mech:     "attack",
+      target:   "opponent",
+      chance:   0,
+      power:    120,
+      accuracy: 85
     },
     hyperBeam: {
       name:     "Hyper Beam",
       type:     "normal",
       stat:     "attack",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    150,
       accuracy: 100
@@ -144,7 +162,8 @@ window.onload = function() {
       mech:     "attack",
       mech2:    "status",
       effect:   "FRZ",
-      chance:   10,
+      target:   "opponent",
+      chance:   0,
       power:    95,
       accuracy: 100
     },
@@ -153,6 +172,7 @@ window.onload = function() {
       type:     "grass",
       stat:     "special",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    40,
       accuracy: 100
@@ -162,6 +182,7 @@ window.onload = function() {
       type:     "bug",
       stat:     "attack",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    50,
       accuracy: 100
@@ -171,6 +192,7 @@ window.onload = function() {
       type:     "psychic",
       stat:     "special",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    90,
       accuracy: 100
@@ -179,7 +201,8 @@ window.onload = function() {
       name:     "Recover",
       type:     "normal",
       statName: "health",
-      mech:     "stat"
+      mech:     "stat",
+      target:   "self"
     },
     reflect: {
       name:     "Reflect",
@@ -188,6 +211,7 @@ window.onload = function() {
       statName: "defense",
       origStat: "startDef",
       mech:     "stat",
+      target:   "self",
       stage:    2,
       accuracy: 100,
     },
@@ -197,6 +221,7 @@ window.onload = function() {
       stat:     "attack",
       mech:     "attack",
       mech2:    "",
+      target:   "opponent",
       chance:   0,
       power:    75,
       accuracy: 90
@@ -206,6 +231,7 @@ window.onload = function() {
       type:     "normal",
       stat:     "attack",
       mech:     "attack",
+      target:   "opponent",
       chance:   0,
       power:    260,
       accuracy: 100,
@@ -233,7 +259,8 @@ window.onload = function() {
       name:     "Softboiled",
       type:     "normal",
       statName: "health",
-      mech:     "stat"
+      mech:     "stat",
+      target:   "self"
     },
     stunSpore: {
       name:     "Stun Spore",
@@ -245,13 +272,14 @@ window.onload = function() {
       accuracy: 75
     },
     surf: {
-      name: "Surf",
-      type: "water",
-      stat: "special",
-      mech: "attack",
-      mech2: "",
-      chance: 0,
-      power: 95,
+      name:     "Surf",
+      type:     "water",
+      stat:     "special",
+      mech:     "attack",
+      mech2:    "",
+      target:   "opponent",
+      chance:   0,
+      power:    95,
       accuracy: 100
     },
     thunderbolt: {
@@ -261,6 +289,7 @@ window.onload = function() {
       mech:     "attack",
       mech2:    "status",
       effect:   "PAR",
+      target:   "opponent",
       chance:   10,
       power:    95,
       accuracy: 100
@@ -286,8 +315,9 @@ window.onload = function() {
       rock:     .5,
       bug:      1,
       ghost:    0,
-      grass:    1,
+      fire:     1,
       water:    1,
+      grass:    1,
       electric: 1,
       psychic:  1,
       ice:      1,
@@ -301,6 +331,7 @@ window.onload = function() {
       rock:     .5,
       bug:      2,
       ghost:    1,
+      fire:     1,
       water:    1,
       grass:    2,
       electric: .5,
@@ -316,6 +347,7 @@ window.onload = function() {
       rock:     .5,
       bug:      1,
       ghost:    .5,
+      fire:     1,
       water:    1,
       grass:    2,
       electric: 1,
@@ -331,6 +363,7 @@ window.onload = function() {
       rock:     2,
       bug:      .5,
       ghost:    1,
+      fire:     2,
       water:    1,
       grass:    .5,
       electric: 2,
@@ -346,6 +379,7 @@ window.onload = function() {
       rock:     1,
       bug:      2,
       ghost:    1,
+      fire:     2,
       water:    1,
       grass:    1,
       electric: 1,
@@ -361,6 +395,7 @@ window.onload = function() {
       rock:     1,
       bug:      1,
       ghost:    .5,
+      fire:     .5,
       water:    1,
       grass:    2,
       electric: 1,
@@ -376,10 +411,27 @@ window.onload = function() {
       rock:     1,
       bug:      1,
       ghost:    2,
+      fire:     1,
       water:    1,
       grass:    1,
       electric: 1,
       psychic:  0,
+      ice:      1,
+      none:     1 
+    },
+    ghost: {
+      normal:   1,
+      flying:   1,
+      poison:   1,
+      ground:   1,
+      rock:     .5,
+      bug:      2,
+      ghost:    1,
+      fire:     .5,
+      water:    .5,
+      grass:    2,
+      electric: 1,
+      psychic:  1,
       ice:      1,
       none:     1 
     },
@@ -391,6 +443,7 @@ window.onload = function() {
       rock:     2,
       bug:      1,
       ghost:    1,
+      fire:     2,
       water:    .5,
       grass:    .5,
       electric: 1,
@@ -406,6 +459,7 @@ window.onload = function() {
       rock:     2,
       bug:      .5,
       ghost:    1,
+      fire:     .5,
       water:    2,
       grass:    .5,
       electric: 1,
@@ -421,6 +475,7 @@ window.onload = function() {
       rock:     1,
       bug:      1,
       ghost:    1,
+      fire:     1,
       water:    2,
       grass:    .5,
       electric: .5,
@@ -431,11 +486,12 @@ window.onload = function() {
     psychic: {
       normal:   1,
       flying:   1,
-      poison:   1,
+      poison:   2,
       ground:   1,
       rock:     1,
       bug:      1,
       ghost:    1,
+      fire:     1,
       water:    1,
       grass:    1,
       electric: 1,
@@ -451,6 +507,7 @@ window.onload = function() {
       rock:     1,
       bug:      1,
       ghost:    1,
+      fire:     1,
       water:    .5,
       grass:    2,
       electric: 1,
@@ -573,12 +630,14 @@ window.onload = function() {
     this.startDef    = 218, 
     this.special     = 358, 
     this.startSpec   = 358, 
-    this.speed       = 318,
-    this.startSpd    = 318,
+    //Speed is usually 318, change for demo.
+    this.speed       = 339,
+    this.startSpd    = 339,
     this.statStages  = [0,0,0,0],
     this.status      = "NON",
     this.turnStat    = 0,
-    this.moves       = [attack.hypnosis, attack.explosion, attack.thunderbolt, attack.megaDrain],
+    //Psychic is Explosion in the main version
+    this.moves       = [attack.iceBeam, attack.psychic, attack.thunderbolt, attack.megaDrain],
     this.frontSprite = "img/Spr_1b_094.png",
     this.backSprite  = "img/Spr_b_g1_094.png",
     this.cry         = new Howl({
@@ -603,7 +662,7 @@ window.onload = function() {
     this.statStages  = [0,0,0,0],
     this.status      = "NON",
     this.turnStat    = 0,
-    this.moves       = [attack.bodySlam, attack.earthquake, attack.explosion, attack.rockSlide],
+    this.moves       = [attack.bodySlam, attack.earthquake, attack.hyperBeam, attack.rockSlide],
     this.frontSprite = "img/Spr_1b_076.png",
     this.backSprite  = "img/Spr_b_g1_076.png"
     this.hyperBeam   = false,
@@ -629,7 +688,7 @@ window.onload = function() {
     this.statStages  = [0,0,0,0],
     this.status      = "NON",
     this.turnStat    = 0,
-    this.moves       = [attack.bodySlam, attack.thunderbolt, attack.thunderWave, attack.pinMissile],
+    this.moves       = [attack.thunderWave, attack.thunderWave, attack.thunderWave, attack.thunderWave],
     this.frontSprite = "img/Spr_1b_135.png",
     this.backSprite  = "img/Spr_b_g1_135.png"
     this.hyperBeam   = false,
@@ -757,7 +816,7 @@ window.onload = function() {
     this.statStages  = [0,0,0,0],
     this.status      = "NON",
     this.turnStat    = 0,
-    this.moves       = [attack.blizzard, attack.thunderbolt, attack.recover, attack.thunderWave],
+    this.moves       = [attack.blizzard, attack.thunderbolt, attack.recover, attack.surf],
     this.frontSprite = "img/Spr_1b_121.png",
     this.backSprite  = "img/Spr_b_g1_121.png",
     this.hyperBeam   = false,
@@ -855,28 +914,36 @@ window.onload = function() {
     var tauros = new Tauros();
     var zapdos = new Zapdos();
 
-    var pickArray = [];
-    pickArray.push(alakazam);
-    pickArray.push(chansey);
-    pickArray.push(cloyster);
-    pickArray.push(exeggutor);
-    pickArray.push(gengar);
-    pickArray.push(golem);
-    pickArray.push(jolteon);
-    pickArray.push(lapras);
-    pickArray.push(rhydon);
-    pickArray.push(slowbro);
-    pickArray.push(snorlax);
-    pickArray.push(starmie);
-    pickArray.push(tauros);
-    pickArray.push(zapdos);
+    // Used outside of demo version:
+    // var pickArray = [];
+    // pickArray.push(alakazam);
+    // pickArray.push(chansey);
+    // pickArray.push(cloyster);
+    // pickArray.push(exeggutor);
+    // pickArray.push(gengar);
+    // pickArray.push(golem);
+    // pickArray.push(jolteon);
+    // pickArray.push(lapras);
+    // pickArray.push(rhydon);
+    // pickArray.push(slowbro);
+    // pickArray.push(snorlax);
+    // pickArray.push(starmie);
+    // pickArray.push(tauros);
+    // pickArray.push(zapdos);
 
-    pickArray = battle.shuffle(pickArray);
+    // pickArray = battle.shuffle(pickArray);
 
-    for (var i = 0; i < 12; i+=2) {
-      this.playerTeam.push(pickArray[i]);
-      this.opponentTeam.push(pickArray[i + 1])
-    }
+    // for (var i = 0; i < 12; i+=2) {
+    //   this.playerTeam.push(pickArray[i]);
+    //   this.opponentTeam.push(pickArray[i + 1])
+    // }
+
+    this.playerTeam.push(alakazam);
+    this.opponentTeam.push(gengar);
+    this.playerTeam.push(slowbro);
+    this.opponentTeam.push(rhydon);
+    this.playerTeam.push(golem);
+    this.opponentTeam.push(zapdos);
   };
 
   Battle.prototype.shuffle = function(array) {
@@ -1252,6 +1319,7 @@ window.onload = function() {
 
   Battle.prototype.skippedMove = function(attacker, defender, pickedMove, defenderTeam, whoAttacks, attackString, defenderString) {
     var canMove = true;
+    console.log(pickedMove.target);
     if (attacker.status === "PAR") {
       var roll = Math.floor(Math.random() * 4)
       if (roll === 0) {
@@ -1274,7 +1342,7 @@ window.onload = function() {
       attacker.hyperBeam = false;
       this.eventString = this.eventString.slice(0, this.eventString - 1);
       this.eventString += attackString + attacker.name + " is recharging!\n"
-    } else if (this.effectiveness(pickedMove, defender) === 0 && this.pickedMove.mech === "attack") {
+    } else if (this.effectiveness(pickedMove, defender) === 0 && pickedMove.target === "opponent") {
       canMove = false;
       this.eventString += defenderString + defender.name + " is immune to " + pickedMove.name + "!\n";
     } else {
